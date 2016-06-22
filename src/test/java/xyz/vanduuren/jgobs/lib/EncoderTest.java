@@ -60,6 +60,12 @@ public class EncoderTest {
 
             retValue = (byte[])(encodeUnsignedInteger.invoke(Encoder.class, 128));
             assertArrayEquals(stringToByteArray("ff80"), retValue);
+
+            retValue = (byte[])(encodeUnsignedInteger.invoke(Encoder.class, 0));
+            assertArrayEquals(stringToByteArray("00"), retValue);
+
+            retValue = (byte[])(encodeUnsignedInteger.invoke(Encoder.class, 0xffffffffffffffffL));
+            assertArrayEquals(stringToByteArray("f8ffffffffffffffff"), retValue);
         } else {
             fail("Error while getting Encoder.encodeUnsignedInteger using reflection.");
         }
