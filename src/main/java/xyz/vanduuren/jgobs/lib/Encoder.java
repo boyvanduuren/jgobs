@@ -20,11 +20,12 @@ public class Encoder {
             encodedUnsignedInteger = new byte[]{(byte)value};
         } else {
             // Start encoding the value if it's >= 128
-            // First, we set the length, negated
+            // First, we'll need the amount of bytes needed to represent this value
             byte amountOfBytes = (byte)((int)Math.ceil(Long.toBinaryString(value).length()/(double)8));
+            // Create a minimal length byte array
             encodedUnsignedInteger = new byte[amountOfBytes+1];
 
-            // Start with the length of the integer, negated
+            // Start with the size of the integer in bytes, negated
             encodedUnsignedInteger[0] = (byte)(amountOfBytes-1^255);
             for (int i = 0; i < amountOfBytes; i++) {
                 // Add the integer values to our byte array, big-endian
