@@ -13,7 +13,7 @@ public class Encoder {
      * @param value The value to encode
      * @return A gob encoded byte array representing the value
      */
-    private static byte[] encodeUnsignedInteger(long value) {
+    public static byte[] encodeUnsignedInteger(long value) {
         byte[] encodedUnsignedInteger;
         // If value < 128 return it as a byte value
         if (Long.compareUnsigned(value, 128) < 0) {
