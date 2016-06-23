@@ -36,4 +36,12 @@ public class Encoder {
         return encodedUnsignedInteger;
     }
 
+    public static byte[] encodeBoolean(boolean value) {
+        if (value) {
+            return encodeUnsignedInteger(1);
+        } else {
+            return encodeUnsignedInteger(0);
+        }
+    }
+
 }

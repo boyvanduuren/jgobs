@@ -37,9 +37,14 @@ public class EncoderTest {
         testValues.entrySet().stream()
                 .forEach(testEntry -> {
                     byte[] retValue = new byte[0];
-                    retValue = (byte[])(Encoder.encodeUnsignedInteger(testEntry.getKey()));
+                    retValue = Encoder.encodeUnsignedInteger(testEntry.getKey());
                     assertArrayEquals(stringToByteArray(testEntry.getValue()), retValue);
                 });
     }
 
+    @Test
+    public void testBooleanEncoding() {
+        assertArrayEquals(stringToByteArray("00"), Encoder.encodeBoolean(false));
+        assertArrayEquals(stringToByteArray("01"), Encoder.encodeBoolean(true));
+    }
 }
