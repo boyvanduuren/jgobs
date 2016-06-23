@@ -4,7 +4,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.xml.bind.DatatypeConverter;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.fail;
@@ -36,36 +39,32 @@ public class EncoderTest {
     }
 
     @Test
-    public void testUnsignedIntegerEncoding() throws Exception {
+    public void testUnsignedIntegerEncoding() {
         if (encodeUnsignedInteger != null) {
-            byte[] retValue;
+            Map<Long, String> testValues = new HashMap<>();
 
-            retValue = (byte[])(encodeUnsignedInteger.invoke(Encoder.class, 256));
-            assertArrayEquals(stringToByteArray("fe0100"), retValue);
+            testValues.put(256L, "fe0100");
+            testValues.put(54738378L, "fc03433dca");
+            testValues.put(8002336222354889572L, "f86f0e026562b45b64");
+            testValues.put(634035792414663034L, "f808cc8c31a5c2617a");
+            testValues.put(9L, "09");
+            testValues.put(127L, "7f");
+            testValues.put(128L, "ff80");
+            testValues.put(0L, "00");
+            testValues.put(0xffffffffffffffffL, "f8ffffffffffffffff");
 
-            retValue = (byte[])(encodeUnsignedInteger.invoke(Encoder.class, 54738378));
-            assertArrayEquals(stringToByteArray("fc03433dca"), retValue);
-
-            retValue = (byte[])(encodeUnsignedInteger.invoke(Encoder.class, 8002336222354889572L));
-            assertArrayEquals(stringToByteArray("f86f0e026562b45b64"), retValue);
-
-            retValue = (byte[])(encodeUnsignedInteger.invoke(Encoder.class, 634035792414663034L));
-            assertArrayEquals(stringToByteArray("f808cc8c31a5c2617a"), retValue);
-
-            retValue = (byte[])(encodeUnsignedInteger.invoke(Encoder.class, 9));
-            assertArrayEquals(stringToByteArray("09"), retValue);
-
-            retValue = (byte[])(encodeUnsignedInteger.invoke(Encoder.class, 127));
-            assertArrayEquals(stringToByteArray("7f"), retValue);
-
-            retValue = (byte[])(encodeUnsignedInteger.invoke(Encoder.class, 128));
-            assertArrayEquals(stringToByteArray("ff80"), retValue);
-
-            retValue = (byte[])(encodeUnsignedInteger.invoke(Encoder.class, 0));
-            assertArrayEquals(stringToByteArray("00"), retValue);
-
-            retValue = (byte[])(encodeUnsignedInteger.invoke(Encoder.class, 0xffffffffffffffffL));
-            assertArrayEquals(stringToByteArray("f8ffffffffffffffff"), retValue);
+            testValues.entrySet().stream()
+                    .forEach(testEntry -> {
+                        byte[] retValue = new byte[0];
+                        try {
+                            retValue = (byte[])(encodeUnsignedInteger.invoke(Encoder.class, testEntry.getKey()));
+                            assertArrayEquals(stringToByteArray(testEntry.getValue()), retValue);
+                        } catch (IllegalAccessException e) {
+                            fail(e.getMessage());
+                        } catch (InvocationTargetException e) {
+                            fail(e.getMessage());
+                        }
+                    });
         } else {
             fail("Error while getting Encoder.encodeUnsignedInteger using reflection.");
         }
