@@ -11,6 +11,18 @@ import java.util.Arrays;
 public class Encoder {
 
     /**
+     * Concatenate two byte arrays
+     * @param a The first byte array
+     * @param b The second byte array
+     * @return The concatenated byte array
+     */
+    private static byte[] concatByteArrays(byte[] a, byte[] b) {
+        byte[] result = Arrays.copyOf(a, a.length + b.length);
+        System.arraycopy(b, 0, result, a.length, b.length);
+        return result;
+    }
+
+    /**
      * Convert a long to a byte array
      * @param value The value to be converted
      * @param amountOfBytes The amount of bytes we need to encode the long
@@ -27,15 +39,33 @@ public class Encoder {
     }
 
     /**
-     * Concatenate two byte arrays
-     * @param a The first byte array
-     * @param b The second byte array
-     * @return The concatenated byte array
+     * Encode a boolean
+     * @param value The value to encode
+     * @return A gob encoded byte array representing the value
      */
-    private static byte[] concatByteArrays(byte[] a, byte[] b) {
-        byte[] result = Arrays.copyOf(a, a.length + b.length);
-        System.arraycopy(b, 0, result, a.length, b.length);
-        return result;
+    public static byte[] encodeBoolean(boolean value) {
+        if (value) {
+            return encodeUnsignedInteger(1);
+        } else {
+            return encodeUnsignedInteger(0);
+        }
+    }
+
+    /**
+     * Encode a long value as a signed integer (max 64 bits)
+     * @param value The value to encode
+     * @return A gob encoded byte array representing the value
+     */
+    public static byte[] encodeSignedInteger(long value) {
+        long encoded;
+        // if value < 0 then complement, shift left and set LSB to 1
+        if (value < 0) {
+            encoded = (~value << 1) | 1;
+        } else {
+            encoded =  value << 1;
+        }
+
+        return encodeUnsignedInteger(encoded);
     }
 
     /**
@@ -57,36 +87,6 @@ public class Encoder {
         }
 
         return encodedUnsignedInteger;
-    }
-
-    /**
-     * Encode a long value as a signed integer (max 64 bits)
-     * @param value The value to encode
-     * @return A gob encoded byte array representing the value
-     */
-    public static byte[] encodeSignedInteger(long value) {
-        long encoded;
-        // if value < 0 then complement, shift left and set LSB to 1
-        if (value < 0) {
-            encoded = (~value << 1) | 1;
-        } else {
-            encoded =  value << 1;
-        }
-
-        return encodeUnsignedInteger(encoded);
-    }
-
-    /**
-     * Encode a boolean
-     * @param value The value to encode
-     * @return A gob encoded byte array representing the value
-     */
-    public static byte[] encodeBoolean(boolean value) {
-        if (value) {
-            return encodeUnsignedInteger(1);
-        } else {
-            return encodeUnsignedInteger(0);
-        }
     }
 
 }
