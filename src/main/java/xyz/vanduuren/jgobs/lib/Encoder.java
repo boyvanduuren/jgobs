@@ -52,6 +52,20 @@ public class Encoder {
     }
 
     /**
+     * Encode a floating point number to a byte array
+     * @param value The value (max 64 bits) to encode
+     * @return A gob encoded byte array representing the value
+     */
+    public static byte[] encodeFloatingPointNumber(double value) {
+        byte[] encodedFloatingPointNumber;
+
+        Long reversed = Long.reverseBytes(Double.doubleToRawLongBits(value));
+        encodedFloatingPointNumber = encodeUnsignedInteger(reversed);
+
+        return encodedFloatingPointNumber;
+    }
+
+    /**
      * Encode a long value as a signed integer (max 64 bits)
      * @param value The value to encode
      * @return A gob encoded byte array representing the value
