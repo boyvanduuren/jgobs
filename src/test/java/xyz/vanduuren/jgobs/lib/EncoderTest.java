@@ -3,9 +3,11 @@ package xyz.vanduuren.jgobs.lib;
 import org.junit.Test;
 
 import javax.xml.bind.DatatypeConverter;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertArrayEquals;
 
 /**
@@ -77,7 +79,11 @@ public class EncoderTest {
         testValues.entrySet().stream()
                 .forEach(testEntry -> {
                     byte[] retValue = new byte[0];
-                    retValue = Encoder.encodeString(testEntry.getKey());
+                    try {
+                        retValue = Encoder.encodeString(testEntry.getKey());
+                    } catch (UnsupportedEncodingException e) {
+                        fail(e.getMessage());
+                    }
                     assertArrayEquals(stringToByteArray(testEntry.getValue()), retValue);
                 });
     }

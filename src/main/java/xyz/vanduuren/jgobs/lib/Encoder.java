@@ -1,5 +1,6 @@
 package xyz.vanduuren.jgobs.lib;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 /**
@@ -87,11 +88,18 @@ public class Encoder {
      * @param value The value to encode
      * @return A gob encoded byte array representing a string
      */
-    public static byte[] encodeString(String value) {
+    public static byte[] encodeString(String value) throws UnsupportedEncodingException {
+        // Get our string as UTF-8 encoded byte array
+        byte[] valueUTF8Encoded = value.getBytes("UTF-8");
         byte[] encodedString;
-        byte[] encodedStringSize = encodeUnsignedInteger(value.length());
+        byte[] encodedStringSize;
 
-        encodedString = concatByteArrays(encodedStringSize, value.getBytes());
+        // Get the length of the UTF-8 encoded array, getting the length
+        // of the String argument will count the runes, not the amount of bytes
+        // needed to encode the string
+        encodedStringSize = encodeUnsignedInteger(valueUTF8Encoded.length);
+        // Encode the amount of bytes needed to encode the string, and the string itself
+        encodedString = concatByteArrays(encodedStringSize, valueUTF8Encoded);
 
         return encodedString;
     }
