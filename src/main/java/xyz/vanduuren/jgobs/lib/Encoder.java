@@ -83,7 +83,8 @@ public class Encoder {
             // Calculate the amount of bytes
             byte amountOfBytes = (byte)((int)Math.ceil(Long.toBinaryString(value).length()/(double)8));
             // Create the encoded result, first byte is the amount of bytes, negated
-            encodedUnsignedInteger = concatByteArrays(new byte[]{(byte)(amountOfBytes-1^255)}, longToByteArray(value, amountOfBytes));
+            encodedUnsignedInteger = concatByteArrays(new byte[]{(byte)(amountOfBytes-1^255)},
+                    longToByteArray(value, amountOfBytes));
         }
 
         return encodedUnsignedInteger;
