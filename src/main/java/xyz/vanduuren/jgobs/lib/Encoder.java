@@ -83,6 +83,20 @@ public class Encoder {
     }
 
     /**
+     * Encode a string to gob
+     * @param value The value to encode
+     * @return A gob encoded byte array representing a string
+     */
+    public static byte[] encodeString(String value) {
+        byte[] encodedString;
+        byte[] encodedStringSize = encodeUnsignedInteger(value.length());
+
+        encodedString = concatByteArrays(encodedStringSize, value.getBytes());
+
+        return encodedString;
+    }
+
+    /**
      * Encode an unsigned integer (max 64 bits) to gob
      * @param value The value to encode
      * @return A gob encoded byte array representing the value

@@ -68,6 +68,21 @@ public class EncoderTest {
     }
 
     @Test
+    public void testStringEncoding() {
+        Map<String, String> testValues = new HashMap<>();
+
+        testValues.put("foo", "03666f6f");
+        testValues.put("Hello, 世界", "0d48656c6c6f2c20e4b896e7958c");
+
+        testValues.entrySet().stream()
+                .forEach(testEntry -> {
+                    byte[] retValue = new byte[0];
+                    retValue = Encoder.encodeString(testEntry.getKey());
+                    assertArrayEquals(stringToByteArray(testEntry.getValue()), retValue);
+                });
+    }
+
+    @Test
     public void testUnsignedIntegerEncoding() {
         Map<Long, String> testValues = new HashMap<>();
 
