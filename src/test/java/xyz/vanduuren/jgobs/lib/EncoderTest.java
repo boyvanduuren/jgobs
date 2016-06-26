@@ -29,6 +29,22 @@ public class EncoderTest {
     }
 
     @Test
+    public void testByteArrayEncoding() {
+        Map<byte[], String> testValues = new HashMap<>();
+
+        testValues.put(new byte[] { 1, 2, 3 }, "03010203");
+        testValues.put(new byte[] { (byte)222, (byte)173, (byte)190, (byte)239 },
+                "04deadbeef");
+
+        testValues.entrySet().stream()
+                .forEach(testEntry -> {
+                    byte[] retValue = new byte[0];
+                    retValue = Encoder.encodeByteArray(testEntry.getKey());
+                    assertArrayEquals(stringToByteArray(testEntry.getValue()), retValue);
+                });
+    }
+
+    @Test
     public void testFloatingPointNumberEncoding() {
         Map<Double, String> testValues = new HashMap<>();
 

@@ -53,6 +53,15 @@ public class Encoder {
     }
 
     /**
+     * Encode a byte array
+     * @param value The byte array prepended with the byte size as unsigned int
+     * @return A gob encoded byte array representing the value
+     */
+    public static byte[] encodeByteArray(byte[] value) {
+        return concatByteArrays(encodeUnsignedInteger(value.length), value);
+    }
+
+    /**
      * Encode a floating point number to a byte array
      * @param value The value (max 64 bits) to encode
      * @return A gob encoded byte array representing the value
