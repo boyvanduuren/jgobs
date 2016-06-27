@@ -16,7 +16,7 @@ import static org.junit.Assert.assertArrayEquals;
  * @author Boy van Duuren <boy@vanduuren.xyz>
  * @since 2016-06-22
  */
-public class EncoderTest {
+public class BasicEncoderTest {
 
     private static byte[] stringToByteArray(String s) {
         return DatatypeConverter.parseHexBinary(s);
@@ -24,8 +24,8 @@ public class EncoderTest {
 
     @Test
     public void testBooleanEncoding() {
-        assertArrayEquals(stringToByteArray("00"), Encoder.encodeBoolean(false));
-        assertArrayEquals(stringToByteArray("01"), Encoder.encodeBoolean(true));
+        assertArrayEquals(stringToByteArray("00"), BasicEncoder.encodeBoolean(false));
+        assertArrayEquals(stringToByteArray("01"), BasicEncoder.encodeBoolean(true));
     }
 
     @Test
@@ -39,7 +39,7 @@ public class EncoderTest {
         testValues.entrySet().stream()
                 .forEach(testEntry -> {
                     byte[] retValue = new byte[0];
-                    retValue = Encoder.encodeByteArray(testEntry.getKey());
+                    retValue = BasicEncoder.encodeByteArray(testEntry.getKey());
                     assertArrayEquals(stringToByteArray(testEntry.getValue()), retValue);
                 });
     }
@@ -58,7 +58,7 @@ public class EncoderTest {
         testValues.entrySet().stream()
                 .forEach(testEntry -> {
                     byte[] retValue = new byte[0];
-                    retValue = Encoder.encodeFloatingPointNumber(testEntry.getKey());
+                    retValue = BasicEncoder.encodeFloatingPointNumber(testEntry.getKey());
                     assertArrayEquals(stringToByteArray(testEntry.getValue()), retValue);
                 });
     }
@@ -80,7 +80,7 @@ public class EncoderTest {
         testValues.entrySet().stream()
                 .forEach(testEntry -> {
                     byte[] retValue = new byte[0];
-                    retValue = Encoder.encodeSignedInteger(testEntry.getKey());
+                    retValue = BasicEncoder.encodeSignedInteger(testEntry.getKey());
                     assertArrayEquals(stringToByteArray(testEntry.getValue()), retValue);
                 });
     }
@@ -96,7 +96,7 @@ public class EncoderTest {
                 .forEach(testEntry -> {
                     byte[] retValue = new byte[0];
                     try {
-                        retValue = Encoder.encodeString(testEntry.getKey());
+                        retValue = BasicEncoder.encodeString(testEntry.getKey());
                     } catch (UnsupportedEncodingException e) {
                         fail(e.getMessage());
                     }
@@ -121,7 +121,7 @@ public class EncoderTest {
         testValues.entrySet().stream()
                 .forEach(testEntry -> {
                     byte[] retValue = new byte[0];
-                    retValue = Encoder.encodeUnsignedInteger(testEntry.getKey());
+                    retValue = BasicEncoder.encodeUnsignedInteger(testEntry.getKey());
                     assertArrayEquals(stringToByteArray(testEntry.getValue()), retValue);
                 });
     }

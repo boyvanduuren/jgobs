@@ -9,7 +9,7 @@ import java.util.Arrays;
  * @author Boy van Duuren <boy@vanduuren.xyz>
  * @since 2016-06-22
  */
-public class Encoder {
+public class BasicEncoder {
 
     /**
      * Concatenate two byte arrays
