@@ -14,14 +14,24 @@ public final class ByteArrayUtilities {
     private ByteArrayUtilities() {}
 
     /**
-     * Concatenate two byte arrays
-     * @param a The first byte array
-     * @param b The second byte array
-     * @return The concatenated byte array
+     * Concatenate multiple byte arrays
+     * @param arrays The arrays to concatenate
+     * @return A single array with all the arrays concatenated in the order of the args.
      */
-    public final static byte[] concat(byte[] a, byte[] b) {
-        byte[] result = Arrays.copyOf(a, a.length + b.length);
-        System.arraycopy(b, 0, result, a.length, b.length);
+    public final static byte[] concat(byte[]... arrays) {
+        if (arrays.length < 2) {
+            throw new IllegalArgumentException("ByteArrayUtilities.concat() requires more than "
+                    + "one argument.");
+        }
+
+        byte[] result = new byte[]{};
+
+        for (int i = 0; i < arrays.length; i++) {
+            byte[] placeholder = Arrays.copyOf(result, result.length + arrays[i].length);
+            System.arraycopy(arrays[i], 0, placeholder, result.length, arrays[i].length);
+            result = placeholder;
+        }
+
         return result;
     }
 
