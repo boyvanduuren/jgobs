@@ -25,8 +25,9 @@ public class StructType extends GobCompositeType<Object> {
         int typeId;
         Field[] classFields = unEncodedData.getClass().getDeclaredFields();
         for (Field field: classFields) {
-            if (Modifier.isPublic(field.getModifiers())) {
-                System.out.println(field.getName() + " is public");
+            if (Modifier.isPublic(field.getModifiers())
+                    && GobCompositeType.class.isAssignableFrom(field.getType())) {
+                System.out.println("Run encode");
             }
         }
 

@@ -20,6 +20,7 @@ public class WireTypeTest {
         class Foo {
             private int a;
             public int b;
+            public StructType structType;
         }
         WireType wireType = new WireType(new StructType(new Foo()));
         wireType.encode();
