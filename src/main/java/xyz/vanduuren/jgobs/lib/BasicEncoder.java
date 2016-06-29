@@ -1,7 +1,6 @@
 package xyz.vanduuren.jgobs.lib;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
 
 /**
  * Encoder encodes a Java object to Go's gob encoding
@@ -10,18 +9,6 @@ import java.util.Arrays;
  * @since 2016-06-22
  */
 public class BasicEncoder {
-
-    /**
-     * Concatenate two byte arrays
-     * @param a The first byte array
-     * @param b The second byte array
-     * @return The concatenated byte array
-     */
-    private static byte[] concatByteArrays(byte[] a, byte[] b) {
-        byte[] result = Arrays.copyOf(a, a.length + b.length);
-        System.arraycopy(b, 0, result, a.length, b.length);
-        return result;
-    }
 
     /**
      * Convert a long to a byte array
@@ -58,7 +45,7 @@ public class BasicEncoder {
      * @return A gob encoded byte array representing the value
      */
     public static byte[] encodeByteArray(byte[] value) {
-        return concatByteArrays(encodeUnsignedInteger(value.length), value);
+        return ByteArrayUtilities.concat(encodeUnsignedInteger(value.length), value);
     }
 
     /**
@@ -108,7 +95,7 @@ public class BasicEncoder {
         // needed to encode the string
         encodedStringSize = encodeUnsignedInteger(valueUTF8Encoded.length);
         // Encode the amount of bytes needed to encode the string, and the string itself
-        encodedString = concatByteArrays(encodedStringSize, valueUTF8Encoded);
+        encodedString = ByteArrayUtilities.concat(encodedStringSize, valueUTF8Encoded);
 
         return encodedString;
     }
@@ -128,8 +115,8 @@ public class BasicEncoder {
             // Calculate the amount of bytes
             byte amountOfBytes = (byte)((int)Math.ceil(Long.toBinaryString(value).length()/(double)8));
             // Create the encoded result, first byte is the amount of bytes, negated
-            encodedUnsignedInteger = concatByteArrays(new byte[]{(byte)(amountOfBytes-1^255)},
-                    longToByteArray(value, amountOfBytes));
+            encodedUnsignedInteger = ByteArrayUtilities.concat(
+                    new byte[]{(byte)(amountOfBytes-1^255)}, longToByteArray(value, amountOfBytes));
         }
 
         return encodedUnsignedInteger;
