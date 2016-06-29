@@ -13,6 +13,9 @@ public abstract class GobCompositeType<T> {
     protected T unEncodedData;
 
     public GobCompositeType(T t) {
+        if (t instanceof WireType) {
+            throw new IllegalArgumentException("Cannot pass WireType as parameter.");
+        }
         this.unEncodedData = t;
     }
 

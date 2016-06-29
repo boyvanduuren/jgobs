@@ -9,6 +9,12 @@ import org.junit.Test;
  * @since 2016-06-27
  */
 public class WireTypeTest {
+
+    @Test(expected = IllegalArgumentException.class)
+    public void constructor() throws Exception {
+        // A WireType can never be constructed with another WireType as argument
+        WireType wireType = new WireType(new WireType(new StructType(new Object())));
+    }
     @Test
     public void encode() throws Exception {
         class Foo {
