@@ -6,6 +6,9 @@ import xyz.vanduuren.jgobs.lib.ByteArrayUtilities;
 import java.io.UnsupportedEncodingException;
 import java.util.AbstractMap;
 
+import static xyz.vanduuren.jgobs.lib.ByteArrayUtilities.nullByteArray;
+import static xyz.vanduuren.jgobs.lib.ByteArrayUtilities.oneByteArray;
+
 /**
  * Give a description of CommonType here.
  *
@@ -29,8 +32,6 @@ public class CommonType extends GobCompositeType<AbstractMap.SimpleEntry<String,
             byte[] encodedCommonType;
             byte[] encodedName = BasicEncoder.encodeString(unEncodedData.getKey());
             byte[] encodedId = BasicEncoder.encodeSignedInteger(unEncodedData.getValue());
-            byte[] nullByteArray = new byte[]{(byte) 0};
-            byte[] oneByteArray = new byte[]{(byte) 1};
 
             encodedCommonType = ByteArrayUtilities.concat(oneByteArray, encodedName,
                     oneByteArray, encodedId, nullByteArray);

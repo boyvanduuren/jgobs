@@ -13,6 +13,9 @@ public final class ByteArrayUtilities {
     // private constructor so this class cannot be instantiated
     private ByteArrayUtilities() {}
 
+    public static final byte[] nullByteArray = new byte[]{0};
+    public static final byte[] oneByteArray = new byte[]{1};
+
     /**
      * Concatenate multiple byte arrays
      * @param arrays The arrays to concatenate
