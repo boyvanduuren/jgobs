@@ -18,7 +18,6 @@ import static org.junit.Assert.assertArrayEquals;
 public class CommonTypeTest {
     @Test
     public void encode() throws Exception {
-        new CommonType(new AbstractMap.SimpleEntry<>("Point", 65));
         Map<CommonType, String> testValues = new HashMap<>();
 
         testValues.put(new CommonType(new AbstractMap.SimpleEntry<>("Point", 65)),
