@@ -34,9 +34,4 @@ public class GobFloatingPoint extends GobType<Double> {
 
         return encodedFloatingPointNumber;
     }
-
-    @Override
-    public int getID() {
-        return ID;
-    }
 }

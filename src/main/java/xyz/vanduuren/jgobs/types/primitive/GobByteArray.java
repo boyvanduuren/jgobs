@@ -30,9 +30,4 @@ public class GobByteArray extends GobType<byte[]> {
     public byte[] encode() {
         return ByteArrayUtilities.concat(new GobUnsignedInteger(unEncodedData.length).encode(), unEncodedData);
     }
-
-    @Override
-    public int getID() {
-        return ID;
-    }
 }

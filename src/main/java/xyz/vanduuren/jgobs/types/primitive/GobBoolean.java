@@ -37,9 +37,4 @@ public class GobBoolean extends GobType<Boolean> {
         return new GobUnsignedInteger(value).encode();
     }
 
-    @Override
-    public int getID() {
-        return ID;
-    }
-
 }

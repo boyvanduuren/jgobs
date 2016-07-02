@@ -29,7 +29,7 @@ public abstract class GobType<T> {
     }
 
     public abstract T decode();
+
     public abstract byte[] encode();
-    public abstract int getID();
 
 }
