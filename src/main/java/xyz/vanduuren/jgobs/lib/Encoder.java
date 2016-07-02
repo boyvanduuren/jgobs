@@ -3,9 +3,7 @@ package xyz.vanduuren.jgobs.lib;
 import xyz.vanduuren.jgobs.types.GobType;
 import xyz.vanduuren.jgobs.types.primitive.*;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Give a description of Encoder here.
@@ -16,6 +14,8 @@ import java.util.Map;
 public class Encoder {
 
     public static final Map<Class<?>, Class<? extends GobType>> supportedTypes;
+    public static final LinkedHashMap<Class<?>, Integer> registeredTypes = new LinkedHashMap<>();
+    private static int firstFreeID = 65;
     static {
         Map<Class<?>, Class<? extends GobType>> tempMap = new HashMap<>();
         // booleans
@@ -42,6 +42,21 @@ public class Encoder {
         // todo: support interfaces?
 
         supportedTypes = Collections.unmodifiableMap(tempMap);
+    }
+
+    /**
+     * Register a class with the encoder.
+     * If we have already registered this class, just return its ID.
+     * @param classToRegister The class to register
+     * @return The ID of the class
+     */
+    public static int registerType(Class<?> classToRegister) {
+        if (!registeredTypes.containsKey(classToRegister)) {
+            registeredTypes.put(classToRegister, firstFreeID);
+            return firstFreeID++;
+        } else {
+            return registeredTypes.get(classToRegister);
+        }
     }
 
 }

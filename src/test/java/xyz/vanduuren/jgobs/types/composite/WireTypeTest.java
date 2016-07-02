@@ -1,8 +1,6 @@
 package xyz.vanduuren.jgobs.types.composite;
 
 import org.junit.Test;
-import xyz.vanduuren.jgobs.types.composite.StructType;
-import xyz.vanduuren.jgobs.types.composite.WireType;
 
 /**
  * Give a description of WireTypeTest here.
@@ -15,7 +13,7 @@ public class WireTypeTest {
     @Test(expected = IllegalArgumentException.class)
     public void constructor() throws Exception {
         // A WireType can never be constructed with another WireType as argument
-        WireType wireType = new WireType(new WireType(new StructType(new Object())));
+        WireType wireType = new WireType(new WireType(new StructType(Object.class)));
     }
     @Test
     public void encode() throws Exception {
@@ -24,7 +22,7 @@ public class WireTypeTest {
             public int b;
             public StructType structType;
         }
-        WireType wireType = new WireType(new StructType(new Foo()));
+        WireType wireType = new WireType(new StructType(Foo.class));
         wireType.encode();
     }
 

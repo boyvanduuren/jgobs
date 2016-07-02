@@ -1,9 +1,10 @@
 package xyz.vanduuren.jgobs.types.composite;
 
 import org.junit.Test;
-import xyz.vanduuren.jgobs.types.composite.StructType;
 
 import javax.xml.bind.DatatypeConverter;
+
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Give a description of StructTypeTest here.
@@ -14,21 +15,14 @@ import javax.xml.bind.DatatypeConverter;
 public class StructTypeTest {
     @Test
     public void encode() throws Exception {
-        class foo {
-            public int i;
-            public Integer io;
-            public boolean b;
-            public Boolean bo;
-            public float f;
-            public Float fo;
-            public double d;
-            public Double dO;
-            public byte[] ba;
-            public String s;
+        // Simple test case from the gobs documentation
+        class Point {
+            public int X;
+            public int Y;
         }
+        assertArrayEquals(DatatypeConverter.parseHexBinary("010105506f696e7401ff8200010201015801040001015901040000"),
+                new StructType(Point.class).encode());
 
-        System.out.println(DatatypeConverter.printHexBinary(
-                new StructType(new foo()).encode()));
     }
 
 }
