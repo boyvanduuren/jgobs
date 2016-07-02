@@ -28,4 +28,9 @@ public class ArrayType extends GobType<Array> {
         return null;
     }
 
+    @Override
+    public int getID() {
+        return ID;
+    }
+
 }

@@ -48,4 +48,9 @@ public class GobString extends GobType<String> {
             throw new RuntimeException("UTF-8 is unsupported.");
         }
     }
+
+    @Override
+    public int getID() {
+        return ID;
+    }
 }

@@ -12,6 +12,8 @@ import java.util.Map;
  */
 public class MapType extends GobType<Map> {
 
+    public static final int ID = 23;
+
     public MapType(Map map) {
         super(map);
     }
@@ -24,6 +26,11 @@ public class MapType extends GobType<Map> {
     @Override
     public byte[] encode() {
         return null;
+    }
+
+    @Override
+    public int getID() {
+        return ID;
     }
 
 }

@@ -48,4 +48,9 @@ public class GobUnsignedInteger extends GobType<Long> {
 
         return encodedUnsignedInteger;
     }
+
+    @Override
+    public int getID() {
+        return ID;
+    }
 }

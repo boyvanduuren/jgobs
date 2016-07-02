@@ -26,4 +26,9 @@ public class WireType extends GobType<GobType> {
         return unEncodedData.encode();
     }
 
+    @Override
+    public int getID() {
+        return ID;
+    }
+
 }

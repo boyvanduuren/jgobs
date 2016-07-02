@@ -41,4 +41,9 @@ public class CommonType extends GobType<AbstractMap.SimpleEntry<String, Integer>
         return encodedCommonType;
     }
 
+    @Override
+    public int getID() {
+        return ID;
+    }
+
 }
