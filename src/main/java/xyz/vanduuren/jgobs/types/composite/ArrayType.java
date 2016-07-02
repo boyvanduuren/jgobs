@@ -1,16 +1,20 @@
-package xyz.vanduuren.jgobs.types;
+package xyz.vanduuren.jgobs.types.composite;
+
+import xyz.vanduuren.jgobs.types.GobType;
 
 import java.lang.reflect.Array;
 
 /**
- * Give a description of SliceType here.
+ * Give a description of ArrayType here.
  *
  * @author Boy van Duuren <boy@vanduuren.xyz>
  * @since 2016-06-27
  */
-public class SliceType extends GobCompositeType<Array> {
+public class ArrayType extends GobType<Array> {
 
-    public SliceType(Array array) {
+    public final static int ID = 17;
+
+    public ArrayType(Array array) {
         super(array);
     }
 

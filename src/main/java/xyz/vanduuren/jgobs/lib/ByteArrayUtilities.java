@@ -10,11 +10,10 @@ import java.util.Arrays;
  */
 public final class ByteArrayUtilities {
 
-    // private constructor so this class cannot be instantiated
-    private ByteArrayUtilities() {}
-
     public static final byte[] nullByteArray = new byte[]{0};
     public static final byte[] oneByteArray = new byte[]{1};
+    // private constructor so this class cannot be instantiated
+    private ByteArrayUtilities() {}
 
     /**
      * Concatenate multiple byte arrays
@@ -33,6 +32,22 @@ public final class ByteArrayUtilities {
             byte[] placeholder = Arrays.copyOf(result, result.length + arrays[i].length);
             System.arraycopy(arrays[i], 0, placeholder, result.length, arrays[i].length);
             result = placeholder;
+        }
+
+        return result;
+    }
+
+    /**
+     * Convert a long to a byte array
+     * @param value The value to be converted
+     * @param amountOfBytes The amount of bytes we need to encode the long
+     * @return The converted value as byte array
+     */
+    public static byte[] longToByteArray(long value, int amountOfBytes) {
+        byte[] result = new byte[amountOfBytes];
+
+        for (int i = 0; i < amountOfBytes; i++) {
+            result[i] = (byte)(value >> (amountOfBytes-i-1)*8);
         }
 
         return result;

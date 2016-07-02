@@ -1,4 +1,6 @@
-package xyz.vanduuren.jgobs.types;
+package xyz.vanduuren.jgobs.types.composite;
+
+import xyz.vanduuren.jgobs.types.GobType;
 
 /**
  * Give a description of WireType here.
@@ -6,14 +8,16 @@ package xyz.vanduuren.jgobs.types;
  * @author Boy van Duuren <boy@vanduuren.xyz>
  * @since 2016-06-27
  */
-public class WireType extends GobCompositeType<GobCompositeType> {
+public class WireType extends GobType<GobType> {
 
-    public WireType(GobCompositeType gob) {
+    public final static int ID = 16;
+
+    public WireType(GobType gob) {
         super(gob);
     }
 
     @Override
-    public GobCompositeType decode() {
+    public GobType decode() {
         return null;
     }
 

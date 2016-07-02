@@ -1,4 +1,4 @@
-package xyz.vanduuren.jgobs.types;
+package xyz.vanduuren.jgobs.types.composite;
 
 /**
  * Give a description of GobCompositeTypeTest here.

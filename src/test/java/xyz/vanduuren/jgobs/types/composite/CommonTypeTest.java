@@ -1,6 +1,7 @@
-package xyz.vanduuren.jgobs.types;
+package xyz.vanduuren.jgobs.types.composite;
 
 import org.junit.Test;
+import xyz.vanduuren.jgobs.types.composite.CommonType;
 
 import javax.xml.bind.DatatypeConverter;
 import java.util.AbstractMap;

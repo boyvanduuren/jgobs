@@ -1,4 +1,6 @@
-package xyz.vanduuren.jgobs.types;
+package xyz.vanduuren.jgobs.types.composite;
+
+import xyz.vanduuren.jgobs.types.GobType;
 
 import java.util.Map;
 
@@ -8,7 +10,7 @@ import java.util.Map;
  * @author Boy van Duuren <boy@vanduuren.xyz>
  * @since 2016-06-27
  */
-public class MapType extends GobCompositeType<Map> {
+public class MapType extends GobType<Map> {
 
     public MapType(Map map) {
         super(map);
