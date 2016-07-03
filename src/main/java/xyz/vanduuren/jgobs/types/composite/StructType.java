@@ -26,10 +26,15 @@ public class StructType extends GobType<Class<?>> {
         super(value);
     }
 
+    private String capitalize(String s) {
+        return Character.toUpperCase(s.charAt(0)) + s.substring(1);
+    }
+
     private byte[] encodeField(Field field) throws NoSuchFieldException, IllegalAccessException,
             IllegalArgumentException {
         byte[] encodedField = null;
-        final String fieldName = field.getName();
+        // Capitalize the field name, because public fields in Go are capitalized
+        final String fieldName = capitalize(field.getName());
         final int fieldID;
         if (Encoder.supportedTypes.containsKey(field.getType())) {
             fieldID = Encoder.supportedTypes.get(field.getType()).getField("ID").getInt(null);

@@ -29,8 +29,8 @@ public class StructTypeTest {
         }
          */
         class Point {
-            public int X;
-            public int Y;
+            public int x;
+            public int y;
         }
         String gobsEncodedStruct = "010105506f696e7401ff8200010201015801040001015901040000";
         assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedStruct),
@@ -47,8 +47,8 @@ public class StructTypeTest {
         */
 
         class Foo {
-            public int Bar;
-            public String Baz;
+            public int bar;
+            public String baz;
         }
         String gobsEncodedStruct = "010103466f6f01ff820001020103426172010400010342617a010c0000";
         assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedStruct),
@@ -68,10 +68,10 @@ public class StructTypeTest {
         */
 
         class Data {
-            public byte[] Raw;
-            public boolean Checked;
-            public float Weight;
-            public String  Serial;
+            public byte[] raw;
+            public boolean checked;
+            public float weight;
+            public String  serial;
             private byte hidden;
         }
         String gobsEncodedStruct = "0101044461746101ff820001040103526177010a000107436865636b65640102"
@@ -92,10 +92,10 @@ public class StructTypeTest {
         */
 
         class Data {
-            public byte[] Raw;
-            public boolean Checked;
-            public float Weight;
-            public String  Serial;
+            public byte[] raw;
+            public boolean checked;
+            public float weight;
+            public String  serial;
             private byte hidden;
         }
 
@@ -107,8 +107,8 @@ public class StructTypeTest {
         */
 
         class Foo {
-            public int Bar;
-            public String Baz;
+            public int bar;
+            public String baz;
         }
 
         String gobsEncodedStruct = "0101044461746101ff820001040103526177010a000107436865636b65640102"
