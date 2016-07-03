@@ -13,9 +13,8 @@ import java.util.*;
  */
 public class Encoder {
 
-    public static final Map<Class<?>, Class<? extends GobType>> supportedTypes;
     public static final LinkedHashMap<Class<?>, Integer> registeredTypes = new LinkedHashMap<>();
-    private static int firstFreeID = 65;
+    public static final Map<Class<?>, Class<? extends GobType>> supportedTypes;
     static {
         Map<Class<?>, Class<? extends GobType>> tempMap = new HashMap<>();
         // booleans
@@ -44,6 +43,8 @@ public class Encoder {
         supportedTypes = Collections.unmodifiableMap(tempMap);
     }
 
+    private static int firstFreeID = 65;
+
     /**
      * Register a class with the encoder.
      * If we have already registered this class, just return its ID.
@@ -57,6 +58,12 @@ public class Encoder {
         } else {
             return registeredTypes.get(classToRegister);
         }
+    }
+
+    // todo: Make encoder instantiable and remove this method, this should be next commit
+    public static void clearRegisteredTypes() {
+        firstFreeID = 65;
+        registeredTypes.clear();
     }
 
 }
