@@ -16,7 +16,7 @@ import static org.junit.Assert.assertArrayEquals;
  */
 public class StructTypeTest {
 
-    Encoder encoder;
+    private Encoder encoder;
 
     @Before
     public void clearEncoder() {
@@ -30,9 +30,11 @@ public class StructTypeTest {
             X, Y int
         }
          */
+
+        @SuppressWarnings("unused")
         class Point {
-            public int x;
-            public int y;
+            public int X;
+            public int Y;
         }
         String gobsEncodedStruct = "010105506f696e7401ff8200010201015801040001015901040000";
         assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedStruct),
@@ -48,6 +50,7 @@ public class StructTypeTest {
         }
         */
 
+        @SuppressWarnings("unused")
         class Foo {
             public int bar;
             public String baz;
@@ -69,6 +72,7 @@ public class StructTypeTest {
         }
         */
 
+        @SuppressWarnings("unused")
         class Data {
             public byte[] raw;
             public boolean checked;
@@ -94,6 +98,7 @@ public class StructTypeTest {
         }
         */
 
+        @SuppressWarnings("unused")
         class Data {
             public byte[] raw;
             public boolean checked;
@@ -109,6 +114,7 @@ public class StructTypeTest {
         }
         */
 
+        @SuppressWarnings("unused")
         class Foo {
             public int bar;
             public String baz;

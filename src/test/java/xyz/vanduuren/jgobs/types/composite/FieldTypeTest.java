@@ -19,7 +19,7 @@ import static org.junit.Assert.assertArrayEquals;
  */
 public class FieldTypeTest {
 
-    Encoder encoder;
+    private Encoder encoder;
 
     @Before
     public void clearEncoder() {
