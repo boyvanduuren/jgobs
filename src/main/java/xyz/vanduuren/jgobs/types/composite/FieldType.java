@@ -1,7 +1,7 @@
 package xyz.vanduuren.jgobs.types.composite;
 
 import xyz.vanduuren.jgobs.lib.ByteArrayUtilities;
-import xyz.vanduuren.jgobs.types.GobType;
+import xyz.vanduuren.jgobs.lib.Encoder;
 import xyz.vanduuren.jgobs.types.primitive.GobSignedInteger;
 import xyz.vanduuren.jgobs.types.primitive.GobString;
 
@@ -16,12 +16,12 @@ import static xyz.vanduuren.jgobs.lib.ByteArrayUtilities.oneByteArray;
  * @author Boy van Duuren <boy@vanduuren.xyz>
  * @since 2016-06-29
  */
-public class FieldType extends GobType<AbstractMap.SimpleEntry<String, Integer>> {
+public class FieldType extends GobCompositeType<AbstractMap.SimpleEntry<String, Integer>> {
 
     public final static int ID = 21;
 
-    public FieldType(AbstractMap.SimpleEntry<String, Integer> nameAndType) {
-        super(nameAndType);
+    public FieldType(Encoder encoder, AbstractMap.SimpleEntry<String, Integer> nameAndType) {
+        super(encoder, nameAndType);
     }
 
     @Override

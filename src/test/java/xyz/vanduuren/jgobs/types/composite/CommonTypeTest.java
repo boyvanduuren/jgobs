@@ -1,7 +1,8 @@
 package xyz.vanduuren.jgobs.types.composite;
 
+import org.junit.Before;
 import org.junit.Test;
-import xyz.vanduuren.jgobs.types.composite.CommonType;
+import xyz.vanduuren.jgobs.lib.Encoder;
 
 import javax.xml.bind.DatatypeConverter;
 import java.util.AbstractMap;
@@ -17,15 +18,23 @@ import static org.junit.Assert.assertArrayEquals;
  * @since 2016-06-29
  */
 public class CommonTypeTest {
+
+    Encoder encoder;
+
+    @Before
+    public void clearEncoder() {
+        encoder = new Encoder();
+    }
+
     @Test
     public void encode() throws Exception {
         Map<CommonType, String> testValues = new HashMap<>();
 
-        testValues.put(new CommonType(new AbstractMap.SimpleEntry<>("Point", 65)),
+        testValues.put(new CommonType(encoder, new AbstractMap.SimpleEntry<>("Point", 65)),
                 "0105506f696e7401ff8200");
-        testValues.put(new CommonType(new AbstractMap.SimpleEntry<>("Baz", 65)),
+        testValues.put(new CommonType(encoder, new AbstractMap.SimpleEntry<>("Baz", 65)),
                 "010342617a01ff8200");
-        testValues.put(new CommonType(new AbstractMap.SimpleEntry<>("Foo", 66)),
+        testValues.put(new CommonType(encoder, new AbstractMap.SimpleEntry<>("Foo", 66)),
                 "0103466f6f01ff8400");
 
 

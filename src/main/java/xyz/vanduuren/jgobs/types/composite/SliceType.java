@@ -1,6 +1,6 @@
 package xyz.vanduuren.jgobs.types.composite;
 
-import xyz.vanduuren.jgobs.types.GobType;
+import xyz.vanduuren.jgobs.lib.Encoder;
 
 import java.lang.reflect.Array;
 
@@ -10,12 +10,12 @@ import java.lang.reflect.Array;
  * @author Boy van Duuren <boy@vanduuren.xyz>
  * @since 2016-06-27
  */
-public class SliceType extends GobType<Array> {
+public class SliceType extends GobCompositeType<Array> {
 
     public final static int ID = 19;
 
-    public SliceType(Array array) {
-        super(array);
+    public SliceType(Encoder encoder, Array array) {
+        super(encoder, array);
     }
 
     @Override

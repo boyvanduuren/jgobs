@@ -43,7 +43,7 @@ public class Encoder {
         supportedTypes = Collections.unmodifiableMap(tempMap);
     }
 
-    private static int firstFreeID = 65;
+    private int firstFreeID = 65;
 
     /**
      * Register a class with the encoder.
@@ -51,19 +51,13 @@ public class Encoder {
      * @param classToRegister The class to register
      * @return The ID of the class
      */
-    public static int registerType(Class<?> classToRegister) {
+    public int registerType(Class<?> classToRegister) {
         if (!registeredTypes.containsKey(classToRegister)) {
             registeredTypes.put(classToRegister, firstFreeID);
             return firstFreeID++;
         } else {
             return registeredTypes.get(classToRegister);
         }
-    }
-
-    // todo: Make encoder instantiable and remove this method, this should be next commit
-    public static void clearRegisteredTypes() {
-        firstFreeID = 65;
-        registeredTypes.clear();
     }
 
 }

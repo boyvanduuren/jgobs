@@ -2,7 +2,6 @@ package xyz.vanduuren.jgobs.types.composite;
 
 import xyz.vanduuren.jgobs.lib.ByteArrayUtilities;
 import xyz.vanduuren.jgobs.lib.Encoder;
-import xyz.vanduuren.jgobs.types.GobType;
 import xyz.vanduuren.jgobs.types.primitive.GobUnsignedInteger;
 
 import java.lang.reflect.Field;
@@ -18,12 +17,12 @@ import static xyz.vanduuren.jgobs.lib.ByteArrayUtilities.oneByteArray;
  * @author Boy van Duuren <boy@vanduuren.xyz>
  * @since 2016-06-27
  */
-public class StructType extends GobType<Class<?>> {
+public class StructType extends GobCompositeType<Class<?>> {
 
     public final static int ID = 20;
 
-    public StructType(Class value) {
-        super(value);
+    public StructType(Encoder encoder, Class value) {
+        super(encoder, value);
     }
 
     private String capitalize(String s) {
@@ -44,7 +43,7 @@ public class StructType extends GobType<Class<?>> {
             throw new IllegalArgumentException("Field " + field.getName() + " with type " + field.getType().getName()
                     + " isn't registered with the encoder.");
         }
-        encodedField = new FieldType(new AbstractMap.SimpleEntry<>(fieldName, fieldID)).encode();
+        encodedField = new FieldType(encoder, new AbstractMap.SimpleEntry<>(fieldName, fieldID)).encode();
 
         return encodedField;
     }
@@ -58,10 +57,10 @@ public class StructType extends GobType<Class<?>> {
     public byte[] encode() {
         byte[] encodedStruct = oneByteArray;
         final String className = unEncodedData.getSimpleName();
-        final int classID = Encoder.registerType(unEncodedData);
+        final int classID = encoder.registerType(unEncodedData);
 
         // Construct StructType.commonType with the class name and ID
-        CommonType commonType = new CommonType(new AbstractMap.SimpleEntry<>(className, classID));
+        CommonType commonType = new CommonType(encoder, new AbstractMap.SimpleEntry<>(className, classID));
         // Add encoded commonType to the encoded struct and select the next field
         encodedStruct = ByteArrayUtilities.concat(encodedStruct, commonType.encode(), oneByteArray);
 

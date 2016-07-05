@@ -16,9 +16,11 @@ import static org.junit.Assert.assertArrayEquals;
  */
 public class StructTypeTest {
 
+    Encoder encoder;
+
     @Before
     public void clearEncoder() {
-        Encoder.clearRegisteredTypes();
+        encoder = new Encoder();
     }
 
     @Test
@@ -34,7 +36,7 @@ public class StructTypeTest {
         }
         String gobsEncodedStruct = "010105506f696e7401ff8200010201015801040001015901040000";
         assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedStruct),
-                new StructType(Point.class).encode());
+                new StructType(encoder, Point.class).encode());
     }
 
     @Test
@@ -52,7 +54,7 @@ public class StructTypeTest {
         }
         String gobsEncodedStruct = "010103466f6f01ff820001020103426172010400010342617a010c0000";
         assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedStruct),
-                new StructType(Foo.class).encode());
+                new StructType(encoder, Foo.class).encode());
     }
 
     @Test
@@ -76,7 +78,8 @@ public class StructTypeTest {
         }
         String gobsEncodedStruct = "0101044461746101ff820001040103526177010a000107436865636b65640102"
                 +"000106576569676874010800010653657269616c010c0000";
-        assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedStruct), new StructType(Data.class).encode());
+        assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedStruct),
+                new StructType(encoder, Data.class).encode());
     }
 
     @Test
@@ -113,10 +116,12 @@ public class StructTypeTest {
 
         String gobsEncodedStruct = "0101044461746101ff820001040103526177010a000107436865636b65640102"
                 + "000106576569676874010800010653657269616c010c0000";
-        assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedStruct), new StructType(Data.class).encode());
+        assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedStruct),
+                new StructType(encoder, Data.class).encode());
 
         gobsEncodedStruct = "010103466f6f01ff840001020103426172010400010342617a010c0000";
-        assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedStruct), new StructType(Foo.class).encode());
+        assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedStruct),
+                new StructType(encoder, Foo.class).encode());
     }
 
 }

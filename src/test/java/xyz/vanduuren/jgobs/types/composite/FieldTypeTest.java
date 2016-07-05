@@ -1,7 +1,8 @@
 package xyz.vanduuren.jgobs.types.composite;
 
+import org.junit.Before;
 import org.junit.Test;
-import xyz.vanduuren.jgobs.types.composite.FieldType;
+import xyz.vanduuren.jgobs.lib.Encoder;
 
 import javax.xml.bind.DatatypeConverter;
 import java.util.AbstractMap;
@@ -17,13 +18,21 @@ import static org.junit.Assert.assertArrayEquals;
  * @since 2016-06-30
  */
 public class FieldTypeTest {
+
+    Encoder encoder;
+
+    @Before
+    public void clearEncoder() {
+        encoder = new Encoder();
+    }
+
     @Test
     public void encode() throws Exception {
         Map<FieldType, String> testValues = new HashMap<>();
 
-        testValues.put(new FieldType(new AbstractMap.SimpleEntry<>("X", 2)),
+        testValues.put(new FieldType(encoder, new AbstractMap.SimpleEntry<>("X", 2)),
                 "010158010400");
-        testValues.put(new FieldType(new AbstractMap.SimpleEntry<>("Y", 2)),
+        testValues.put(new FieldType(encoder, new AbstractMap.SimpleEntry<>("Y", 2)),
                 "010159010400");
 
 

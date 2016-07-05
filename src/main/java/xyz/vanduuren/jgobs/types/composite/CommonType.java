@@ -1,7 +1,7 @@
 package xyz.vanduuren.jgobs.types.composite;
 
 import xyz.vanduuren.jgobs.lib.ByteArrayUtilities;
-import xyz.vanduuren.jgobs.types.GobType;
+import xyz.vanduuren.jgobs.lib.Encoder;
 import xyz.vanduuren.jgobs.types.primitive.GobSignedInteger;
 import xyz.vanduuren.jgobs.types.primitive.GobString;
 
@@ -16,12 +16,12 @@ import static xyz.vanduuren.jgobs.lib.ByteArrayUtilities.oneByteArray;
  * @author Boy van Duuren <boy@vanduuren.xyz>
  * @since 2016-06-29
  */
-public class CommonType extends GobType<AbstractMap.SimpleEntry<String, Integer>> {
+public class CommonType extends GobCompositeType<AbstractMap.SimpleEntry<String, Integer>> {
 
     public final static int ID = 18;
 
-    public CommonType(AbstractMap.SimpleEntry<String, Integer> nameAndId) {
-        super(nameAndId);
+    public CommonType(Encoder encoder, AbstractMap.SimpleEntry<String, Integer> nameAndId) {
+        super(encoder, nameAndId);
     }
 
     @Override

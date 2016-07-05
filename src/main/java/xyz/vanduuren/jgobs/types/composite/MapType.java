@@ -1,6 +1,6 @@
 package xyz.vanduuren.jgobs.types.composite;
 
-import xyz.vanduuren.jgobs.types.GobType;
+import xyz.vanduuren.jgobs.lib.Encoder;
 
 import java.util.Map;
 
@@ -10,12 +10,12 @@ import java.util.Map;
  * @author Boy van Duuren <boy@vanduuren.xyz>
  * @since 2016-06-27
  */
-public class MapType extends GobType<Map> {
+public class MapType extends GobCompositeType<Map> {
 
     public static final int ID = 23;
 
-    public MapType(Map map) {
-        super(map);
+    public MapType(Encoder encoder, Map map) {
+        super(encoder, map);
     }
 
     @Override

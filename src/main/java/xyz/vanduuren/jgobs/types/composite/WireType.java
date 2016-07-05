@@ -1,5 +1,6 @@
 package xyz.vanduuren.jgobs.types.composite;
 
+import xyz.vanduuren.jgobs.lib.Encoder;
 import xyz.vanduuren.jgobs.types.GobType;
 
 /**
@@ -8,12 +9,13 @@ import xyz.vanduuren.jgobs.types.GobType;
  * @author Boy van Duuren <boy@vanduuren.xyz>
  * @since 2016-06-27
  */
-public class WireType extends GobType<GobType> {
+public class WireType extends GobCompositeType<GobType> {
 
+    private Encoder encoder;
     public final static int ID = 16;
 
-    public WireType(GobType gob) {
-        super(gob);
+    public WireType(Encoder encoder, GobType gob) {
+        super(encoder, gob);
     }
 
     @Override
