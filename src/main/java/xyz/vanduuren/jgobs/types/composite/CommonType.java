@@ -32,8 +32,8 @@ public class CommonType extends GobCompositeType<AbstractMap.SimpleEntry<String,
     @Override
     public byte[] encode() {
         byte[] encodedCommonType;
-        byte[] encodedName = new GobString(unEncodedData.getKey()).encode();
-        byte[] encodedId = new GobSignedInteger(unEncodedData.getValue()).encode();
+        byte[] encodedName = new GobString(unencodedData.getKey()).encode();
+        byte[] encodedId = new GobSignedInteger(unencodedData.getValue()).encode();
 
         encodedCommonType = ByteArrayUtilities.concat(oneByteArray, encodedName,
                 oneByteArray, encodedId, nullByteArray);

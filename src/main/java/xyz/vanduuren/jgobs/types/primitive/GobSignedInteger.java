@@ -32,11 +32,11 @@ public class GobSignedInteger extends GobType<Long> {
     @Override
     public byte[] encode() {
         long encoded;
-        // if unEncodedData < 0 then complement, shift left and set LSB to 1
-        if (unEncodedData < 0) {
-            encoded = (~unEncodedData << 1) | 1;
+        // if unencodedData < 0 then complement, shift left and set LSB to 1
+        if (unencodedData < 0) {
+            encoded = (~unencodedData << 1) | 1;
         } else {
-            encoded =  unEncodedData << 1;
+            encoded =  unencodedData << 1;
         }
 
         return new GobUnsignedInteger(encoded).encode();

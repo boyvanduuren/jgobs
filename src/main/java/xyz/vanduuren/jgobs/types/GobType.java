@@ -12,7 +12,7 @@ import xyz.vanduuren.jgobs.types.composite.WireType;
 public abstract class GobType<T> {
 
     protected byte[] encodedData;
-    protected T unEncodedData;
+    protected T unencodedData;
 
     // in case we're dealing with something like a byte[], use empty constructor
     public GobType() {}
@@ -21,7 +21,7 @@ public abstract class GobType<T> {
         if (t instanceof WireType) {
             throw new IllegalArgumentException("Cannot pass WireType as parameter.");
         }
-        this.unEncodedData = t;
+        this.unencodedData = t;
     }
 
     public GobType(byte[] encodedData) {

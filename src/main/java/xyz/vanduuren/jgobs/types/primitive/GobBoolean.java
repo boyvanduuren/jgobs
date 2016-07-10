@@ -28,7 +28,7 @@ public class GobBoolean extends GobType<Boolean> {
     @Override
     public byte[] encode() {
         int value;
-        if (unEncodedData) {
+        if (unencodedData) {
             value = 1;
         } else {
             value = 0;

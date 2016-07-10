@@ -32,11 +32,11 @@ public class WireType extends GobCompositeType<Class<?>> {
         final byte[] structTypeField = new byte[]{3};
         byte[] encodedWireType;
         // register the class and save the classID for later
-        int classID = encoder.registerType(unEncodedData);
+        int classID = encoder.registerType(unencodedData);
         // encode the classID
         byte[] encodedClassID = new GobSignedInteger(-classID).encode();
         // encode the struct
-        byte[] encodedStruct = new StructType(encoder, unEncodedData).encode();
+        byte[] encodedStruct = new StructType(encoder, unencodedData).encode();
 
         encodedWireType = ByteArrayUtilities.concat(encodedClassID, structTypeField,
                 encodedStruct, nullByteArray);

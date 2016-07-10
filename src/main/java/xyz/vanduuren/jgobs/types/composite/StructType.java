@@ -62,8 +62,8 @@ public class StructType extends GobCompositeType<Class<?>> {
     @Override
     public byte[] encode() {
         byte[] encodedStruct = oneByteArray;
-        final String className = unEncodedData.getSimpleName();
-        classID = encoder.registerType(unEncodedData);
+        final String className = unencodedData.getSimpleName();
+        classID = encoder.registerType(unencodedData);
 
         // Construct StructType.commonType with the class name and ID
         CommonType commonType = new CommonType(encoder, new AbstractMap.SimpleEntry<>(className, classID));
@@ -71,7 +71,7 @@ public class StructType extends GobCompositeType<Class<?>> {
         encodedStruct = ByteArrayUtilities.concat(encodedStruct, commonType.encode(), oneByteArray);
 
         // Start encoding the structType's fields
-        Field[] classFields = unEncodedData.getDeclaredFields();
+        Field[] classFields = unencodedData.getDeclaredFields();
         byte[] encodedFields = null;
         // Used to keep track of how many fields we need to encode
         int fieldCount = 0;
@@ -102,9 +102,9 @@ public class StructType extends GobCompositeType<Class<?>> {
     }
 
     public byte[] encodeValue(Object obj) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, InstantiationException {
-        if (!unEncodedData.isAssignableFrom(obj.getClass())) {
+        if (!unencodedData.isAssignableFrom(obj.getClass())) {
             throw new IllegalArgumentException("Cannot encode parameter: " + obj.getClass().getName()
-                    + " is not assignable from " + unEncodedData.getName() + ".");
+                    + " is not assignable from " + unencodedData.getName() + ".");
         }
 
         if (classID == -1) {

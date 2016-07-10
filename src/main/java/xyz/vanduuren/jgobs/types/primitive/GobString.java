@@ -32,16 +32,16 @@ public class GobString extends GobType<String> {
     public byte[] encode() {
         // Get our string as UTF-8 encoded byte array
         try {
-            byte[] unEncodedDataUTF8Encoded = unEncodedData.getBytes("UTF-8");
+            byte[] unencodedDataUTF8Encoded = unencodedData.getBytes("UTF-8");
             byte[] encodedString;
             byte[] encodedStringSize;
 
             // Get the length of the UTF-8 encoded array, getting the length
             // of the GobString argument will count the runes, not the amount of bytes
             // needed to encode the string
-            encodedStringSize = new GobUnsignedInteger(unEncodedDataUTF8Encoded.length).encode();
+            encodedStringSize = new GobUnsignedInteger(unencodedDataUTF8Encoded.length).encode();
             // Encode the amount of bytes needed to encode the string, and the string itself
-            encodedString = ByteArrayUtilities.concat(encodedStringSize, unEncodedDataUTF8Encoded);
+            encodedString = ByteArrayUtilities.concat(encodedStringSize, unencodedDataUTF8Encoded);
 
             return encodedString;
         } catch (UnsupportedEncodingException e) {

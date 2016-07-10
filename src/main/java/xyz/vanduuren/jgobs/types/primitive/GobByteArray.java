@@ -14,7 +14,7 @@ public class GobByteArray extends GobType<byte[]> {
     public final static int ID = 5;
 
     public GobByteArray(byte[] value) {
-        this.unEncodedData = value;
+        this.unencodedData = value;
     }
 
     @Override
@@ -28,6 +28,6 @@ public class GobByteArray extends GobType<byte[]> {
      */
     @Override
     public byte[] encode() {
-        return ByteArrayUtilities.concat(new GobUnsignedInteger(unEncodedData.length).encode(), unEncodedData);
+        return ByteArrayUtilities.concat(new GobUnsignedInteger(unencodedData.length).encode(), unencodedData);
     }
 }

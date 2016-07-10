@@ -29,7 +29,7 @@ public class GobFloatingPoint extends GobType<Double> {
     public byte[] encode() {
         byte[] encodedFloatingPointNumber;
 
-        Long reversed = Long.reverseBytes(Double.doubleToRawLongBits(unEncodedData));
+        Long reversed = Long.reverseBytes(Double.doubleToRawLongBits(unencodedData));
         encodedFloatingPointNumber = new GobUnsignedInteger(reversed).encode();
 
         return encodedFloatingPointNumber;
