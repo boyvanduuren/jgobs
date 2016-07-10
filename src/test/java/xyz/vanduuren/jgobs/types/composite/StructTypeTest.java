@@ -23,22 +23,37 @@ public class StructTypeTest {
         encoder = new Encoder();
     }
 
-    @Test
-    public void encodePoint() throws Exception {
-        /*
-        type Point struct {
-            X, Y int
-        }
-         */
 
-        @SuppressWarnings("unused")
-        class Point {
-            public int X;
-            public int Y;
-        }
+    /*
+    type Point struct {
+        X, Y int
+    }
+     */
+
+    @SuppressWarnings("unused")
+    class Point {
+        public int X;
+        public int Y;
+    }
+
+    @Test
+    public void encodePointType() throws Exception {
+        StructType structType = new StructType(encoder, Point.class);
+
         String gobsEncodedStruct = "010105506f696e7401ff8200010201015801040001015901040000";
         assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedStruct),
-                new StructType(encoder, Point.class).encode());
+                structType.encode());
+    }
+
+    @Test
+    public void encodePointValue() throws Exception {
+        StructType structType = new StructType(encoder, Point.class);
+        Point point = new Point();
+        point.X = 22;
+        point.Y = 33;
+
+        String gobsEncodedPointValue = "07ff82012c014200";
+        assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedPointValue), structType.encodeValue(point));
     }
 
     @Test

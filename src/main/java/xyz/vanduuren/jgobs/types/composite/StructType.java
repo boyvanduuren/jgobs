@@ -2,11 +2,14 @@ package xyz.vanduuren.jgobs.types.composite;
 
 import xyz.vanduuren.jgobs.lib.ByteArrayUtilities;
 import xyz.vanduuren.jgobs.lib.Encoder;
+import xyz.vanduuren.jgobs.types.GobType;
+import xyz.vanduuren.jgobs.types.primitive.GobSignedInteger;
 import xyz.vanduuren.jgobs.types.primitive.GobUnsignedInteger;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
 
 import static xyz.vanduuren.jgobs.lib.ByteArrayUtilities.nullByteArray;
 import static xyz.vanduuren.jgobs.lib.ByteArrayUtilities.oneByteArray;
@@ -20,6 +23,8 @@ import static xyz.vanduuren.jgobs.lib.ByteArrayUtilities.oneByteArray;
 public class StructType extends GobCompositeType<Class<?>> {
 
     public final static int ID = 20;
+    List<Field> encodableFields = new ArrayList<>();
+    private int classID = -1;
 
     public StructType(Encoder encoder, Class value) {
         super(encoder, value);
@@ -44,6 +49,7 @@ public class StructType extends GobCompositeType<Class<?>> {
                     + " isn't registered with the encoder.");
         }
         encodedField = new FieldType(encoder, new AbstractMap.SimpleEntry<>(fieldName, fieldID)).encode();
+        encodableFields.add(field);
 
         return encodedField;
     }
@@ -57,7 +63,7 @@ public class StructType extends GobCompositeType<Class<?>> {
     public byte[] encode() {
         byte[] encodedStruct = oneByteArray;
         final String className = unEncodedData.getSimpleName();
-        final int classID = encoder.registerType(unEncodedData);
+        classID = encoder.registerType(unEncodedData);
 
         // Construct StructType.commonType with the class name and ID
         CommonType commonType = new CommonType(encoder, new AbstractMap.SimpleEntry<>(className, classID));
@@ -90,7 +96,38 @@ public class StructType extends GobCompositeType<Class<?>> {
         encodedStruct = ByteArrayUtilities.concat(
                 encodedStruct, new GobUnsignedInteger(fieldCount).encode(), encodedFields);
 
+        encodedData = encodedStruct;
+
         return ByteArrayUtilities.concat(encodedStruct, nullByteArray);
+    }
+
+    public byte[] encodeValue(Object obj) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, InstantiationException {
+        if (!unEncodedData.isAssignableFrom(obj.getClass())) {
+            throw new IllegalArgumentException("Cannot encode parameter: " + obj.getClass().getName()
+                    + " is not assignable from " + unEncodedData.getName() + ".");
+        }
+
+        if (classID == -1) {
+            this.encode();
+        }
+
+        byte[] encodedValue = new GobSignedInteger(classID).encode();
+
+        for (Field f: encodableFields) {
+            Object value = f.get(obj);
+            Class<? extends GobType> gobType = Encoder.supportedTypes.get(value.getClass());
+            Constructor<? extends GobType> constructor = gobType.getConstructor(f.getType());
+            Method method = gobType.getMethod("encode");
+            encodedValue = ByteArrayUtilities.concat(encodedValue, oneByteArray,
+                    (byte[]) method.invoke(constructor.newInstance(value)));
+        }
+
+        encodedValue = ByteArrayUtilities.concat(encodedValue, nullByteArray);
+        byte[] totalSize = new GobUnsignedInteger(encodedValue.length).encode();
+
+        encodedValue = ByteArrayUtilities.concat(totalSize, encodedValue);
+
+        return encodedValue;
     }
 
 }
