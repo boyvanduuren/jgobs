@@ -38,22 +38,6 @@ public final class ByteArrayUtilities {
     }
 
     /**
-     * Convert a long to a byte array
-     * @param value The value to be converted
-     * @param amountOfBytes The amount of bytes we need to encode the long
-     * @return The converted value as byte array
-     */
-    public static byte[] longToByteArray(long value, int amountOfBytes) {
-        byte[] result = new byte[amountOfBytes];
-
-        for (int i = 0; i < amountOfBytes; i++) {
-            result[i] = (byte)(value >> (amountOfBytes-i-1)*8);
-        }
-
-        return result;
-    }
-
-    /**
      * Does this byte array contain an element that isn't 0x00?
      * @param byteArray The byte array to check
      * @return Do we have a byte that doesn't equal 0x00?
@@ -69,6 +53,22 @@ public final class ByteArrayUtilities {
         }
 
         return nonNull;
+    }
+
+    /**
+     * Convert a long to a byte array
+     * @param value The value to be converted
+     * @param amountOfBytes The amount of bytes we need to encode the long
+     * @return The converted value as byte array
+     */
+    public static byte[] longToByteArray(long value, int amountOfBytes) {
+        byte[] result = new byte[amountOfBytes];
+
+        for (int i = 0; i < amountOfBytes; i++) {
+            result[i] = (byte)(value >> (amountOfBytes-i-1)*8);
+        }
+
+        return result;
     }
 
 }
