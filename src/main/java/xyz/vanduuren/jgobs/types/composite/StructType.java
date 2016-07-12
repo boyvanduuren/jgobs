@@ -128,8 +128,7 @@ public class StructType extends GobCompositeType<Class<?>> {
                         (byte[]) method.invoke(constructor.newInstance(value)));
                 skippedAmountOfFields = 0;
             } else {
-                // If we're not encoding the last field we need to increase the field number by two
-                // to clarify we're skipping this field
+                // If we're not encoding the last field we need to increase the skipped fields counter
                 if (encodableFields.indexOf(f) < encodableFields.size()-1) {
                     skippedAmountOfFields++;
                 }
