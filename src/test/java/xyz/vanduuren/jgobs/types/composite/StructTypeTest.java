@@ -56,6 +56,54 @@ public class StructTypeTest {
         assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedPointValue), structType.encodeValue(point));
     }
 
+    @SuppressWarnings("unused")
+    class Person {
+        public String name;
+        public int age;
+        public String gender;
+        public boolean married;
+    }
+
+    @Test
+    public void encodePersonType() throws Exception {
+        StructType structType = new StructType(encoder, Person.class);
+
+        String gobsEncodedStruct = "010106506572736f6e01ff8200010401044e616d65010c000103416765010400"
+                + "010647656e646572010c0001074d61727269656401020000";
+        assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedStruct), structType.encode());
+    }
+
+    @Test
+    public void encodePersonValue() throws Exception {
+        StructType structType = new StructType(encoder, Person.class);
+
+        // person.married for the next object is 0x00 gobs encoded. This will result in a
+        // skipped field at the end.
+        Person person = new Person();
+        person.name = "Boy van Duuren";
+        person.age = 29;
+        person.gender = "male";
+        person.married = false;
+
+        String gobsEncodedPersonValue = "1bff82010e426f792076616e2044757572656e013a01046d616c6500";
+        assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedPersonValue), structType.encodeValue(person));
+
+        // The next Person object tests the skipping of fields with a non-skipped field at the end
+        person = new Person();
+        person.name = "Blaat Koe";
+        person.age = 0;
+        person.gender = "";
+        person.married = true;
+
+        gobsEncodedPersonValue = "10ff820109426c616174204b6f65030100";
+        assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedPersonValue), structType.encodeValue(person));
+
+        // Skip the last three fields
+        person.married = false;
+        gobsEncodedPersonValue = "0eff820109426c616174204b6f6500";
+        assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedPersonValue), structType.encodeValue(person));
+    }
+
     @Test
     public void encodeFoo() throws Exception {
         /*

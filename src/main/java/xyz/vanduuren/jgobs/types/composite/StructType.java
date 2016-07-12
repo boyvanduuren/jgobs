@@ -112,14 +112,28 @@ public class StructType extends GobCompositeType<Class<?>> {
         }
 
         byte[] encodedValue = new GobSignedInteger(classID).encode();
+        int skippedAmountOfFields = 0;
 
         for (Field f: encodableFields) {
             Object value = f.get(obj);
             Class<? extends GobType> gobType = Encoder.supportedTypes.get(value.getClass());
             Constructor<? extends GobType> constructor = gobType.getConstructor(f.getType());
             Method method = gobType.getMethod("encode");
-            encodedValue = ByteArrayUtilities.concat(encodedValue, oneByteArray,
-                    (byte[]) method.invoke(constructor.newInstance(value)));
+            byte[] tempValue = (byte[]) method.invoke(constructor.newInstance(value));
+            // We need to check if an encoded value results in a null array
+            // if it does, we skip it.
+            if (ByteArrayUtilities.isNonNull(tempValue)) {
+                byte[] fieldIncrement = new GobUnsignedInteger(skippedAmountOfFields + 1).encode();
+                encodedValue = ByteArrayUtilities.concat(encodedValue, fieldIncrement,
+                        (byte[]) method.invoke(constructor.newInstance(value)));
+                skippedAmountOfFields = 0;
+            } else {
+                // If we're not encoding the last field we need to increase the field number by two
+                // to clarify we're skipping this field
+                if (encodableFields.indexOf(f) < encodableFields.size()-1) {
+                    skippedAmountOfFields++;
+                }
+            }
         }
 
         encodedValue = ByteArrayUtilities.concat(encodedValue, nullByteArray);

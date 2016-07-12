@@ -53,4 +53,22 @@ public final class ByteArrayUtilities {
         return result;
     }
 
+    /**
+     * Does this byte array contain an element that isn't 0x00?
+     * @param byteArray The byte array to check
+     * @return Do we have a byte that doesn't equal 0x00?
+     */
+    public static boolean isNonNull(byte[] byteArray) {
+        boolean nonNull = false;
+
+        for (byte b: byteArray) {
+            if ((int) b != 0) {
+                nonNull = true;
+                break;
+            }
+        }
+
+        return nonNull;
+    }
+
 }
