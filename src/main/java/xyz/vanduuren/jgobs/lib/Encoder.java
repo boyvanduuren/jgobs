@@ -1,9 +1,14 @@
 package xyz.vanduuren.jgobs.lib;
 
 import xyz.vanduuren.jgobs.types.GobType;
+import xyz.vanduuren.jgobs.types.composite.WireType;
 import xyz.vanduuren.jgobs.types.primitive.*;
 
-import java.util.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Give a description of Encoder here.
@@ -44,6 +49,37 @@ public class Encoder {
     }
 
     private int firstFreeID = 65;
+
+    /**
+     * Encode an object as a gob.
+     * Only simple (primitive fields only) struct types are supported for now.
+     * @param object The object to encode
+     * @return A gob encoded byte array representing the object
+     */
+    public byte[] encode(Object object) {
+        byte[] result = null;
+        WireType wireType;
+        boolean newType = false;
+
+        if (!registeredTypes.containsKey(object.getClass())) {
+            newType = true;
+        }
+
+        wireType = new WireType(this, object.getClass());
+        try {
+            if (newType) {
+                result = ByteArrayUtilities.concat(wireType.encode(), wireType.encapsulatedType.encodeValue(object));
+            } else {
+                result = wireType.encapsulatedType.encodeValue(object);
+            }
+        } catch (IllegalAccessException | NoSuchMethodException
+                | InvocationTargetException | InstantiationException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Ran into an error while encoding " + object.getClass().getSimpleName());
+        }
+
+        return result;
+    }
 
     /**
      * Register a class with the encoder.

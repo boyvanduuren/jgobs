@@ -16,9 +16,12 @@ import static xyz.vanduuren.jgobs.lib.ByteArrayUtilities.nullByteArray;
 public class WireType extends GobCompositeType<Class<?>> {
 
     public final static int ID = 16;
+    // encapsulatedType will need to become generic
+    public StructType encapsulatedType;
 
     public WireType(Encoder encoder, Class<?> clazz) {
         super(encoder, clazz);
+        encapsulatedType = new StructType(encoder, unencodedData);
     }
 
     @Override
@@ -36,7 +39,7 @@ public class WireType extends GobCompositeType<Class<?>> {
         // encode the classID
         byte[] encodedClassID = new GobSignedInteger(-classID).encode();
         // encode the struct
-        byte[] encodedStruct = new StructType(encoder, unencodedData).encode();
+        byte[] encodedStruct = encapsulatedType.encode();
 
         encodedWireType = ByteArrayUtilities.concat(encodedClassID, structTypeField,
                 encodedStruct, nullByteArray);
