@@ -4,6 +4,8 @@ import xyz.vanduuren.jgobs.types.GobType;
 import xyz.vanduuren.jgobs.types.composite.WireType;
 import xyz.vanduuren.jgobs.types.primitive.*;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,6 +51,11 @@ public class Encoder {
     }
 
     private int firstFreeID = 65;
+    private OutputStream outputStream;
+
+    public Encoder(OutputStream outputStream) {
+        this.outputStream = outputStream;
+    }
 
     /**
      * Encode an object as a gob.
@@ -56,7 +63,7 @@ public class Encoder {
      * @param object The object to encode
      * @return A gob encoded byte array representing the object
      */
-    public byte[] encode(Object object) {
+    public void encode(Object object) throws IOException {
         byte[] result = null;
         WireType wireType;
         boolean newType = false;
@@ -78,7 +85,7 @@ public class Encoder {
             throw new RuntimeException("Ran into an error while encoding " + object.getClass().getSimpleName());
         }
 
-        return result;
+        outputStream.write(result);
     }
 
     /**

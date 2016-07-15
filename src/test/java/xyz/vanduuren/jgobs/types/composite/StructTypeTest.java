@@ -6,6 +6,8 @@ import xyz.vanduuren.jgobs.lib.Encoder;
 
 import javax.xml.bind.DatatypeConverter;
 
+import java.io.ByteArrayOutputStream;
+
 import static org.junit.Assert.assertArrayEquals;
 
 /**
@@ -17,10 +19,12 @@ import static org.junit.Assert.assertArrayEquals;
 public class StructTypeTest {
 
     private Encoder encoder;
+    private ByteArrayOutputStream outputStream;
 
     @Before
     public void clearEncoder() {
-        encoder = new Encoder();
+        outputStream = new ByteArrayOutputStream();
+        encoder = new Encoder(outputStream);
     }
 
 
