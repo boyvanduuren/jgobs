@@ -93,8 +93,13 @@ public class StructType extends GobCompositeType<Class<?>> {
             }
         }
         // Concat StructType.commonType and StructType.fieldType(s)
-        encodedStruct = ByteArrayUtilities.concat(
-                encodedStruct, new GobUnsignedInteger(fieldCount).encode(), encodedFields);
+        if (encodedFields != null) {
+            encodedStruct = ByteArrayUtilities.concat(
+                    encodedStruct, new GobUnsignedInteger(fieldCount).encode(), encodedFields);
+        } else {
+            throw new IllegalArgumentException("Couldn't encode StructType \"" + unencodedData.getSimpleName()
+                    + "\" because it has no public fields.");
+        }
 
         encodedData = encodedStruct;
 
