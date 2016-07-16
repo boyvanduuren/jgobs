@@ -47,9 +47,12 @@ public class WireType extends GobCompositeType<Class<?>> {
         byte[] totalSize = new GobUnsignedInteger(encodedWireType.length).encode();
 
         // encode the total size + classID + encoded struct type
-        encodedWireType = ByteArrayUtilities.concat(totalSize, encodedWireType);
+        encodedData = ByteArrayUtilities.concat(totalSize, encodedWireType);
 
-        return encodedWireType;
+        // Write our encoded type to the Encoder's outputStream
+        encoder.writeToOutputStream(encodedData);
+
+        return encodedData;
     }
 
 }

@@ -6,7 +6,6 @@ import xyz.vanduuren.jgobs.types.primitive.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -20,8 +19,8 @@ import java.util.Map;
  */
 public class Encoder {
 
-    public static final LinkedHashMap<Class<?>, Integer> registeredTypes = new LinkedHashMap<>();
     public static final Map<Class<?>, Class<? extends GobType>> supportedTypes;
+
     static {
         Map<Class<?>, Class<? extends GobType>> tempMap = new HashMap<>();
         // booleans
@@ -50,6 +49,8 @@ public class Encoder {
         supportedTypes = Collections.unmodifiableMap(tempMap);
     }
 
+    public final LinkedHashMap<Class<?>, Integer> registeredTypeIDs = new LinkedHashMap<>();
+    public final Map<Integer, WireType> registeredWireTypes = new HashMap<>();
     private int firstFreeID = 65;
     private OutputStream outputStream;
 
@@ -60,6 +61,7 @@ public class Encoder {
     /**
      * Encode an object as a gob.
      * Only simple (primitive fields only) struct types are supported for now.
+     *
      * @param object The object to encode
      * @return A gob encoded byte array representing the object
      */
@@ -68,19 +70,12 @@ public class Encoder {
         WireType wireType;
         boolean newType = false;
 
-        if (!registeredTypes.containsKey(object.getClass())) {
-            newType = true;
-        }
+        registerType(object.getClass());
 
-        wireType = new WireType(this, object.getClass());
+        wireType = getWireTypeByType(object.getClass());
         try {
-            if (newType) {
-                result = ByteArrayUtilities.concat(wireType.encode(), wireType.encapsulatedType.encodeValue(object));
-            } else {
-                result = wireType.encapsulatedType.encodeValue(object);
-            }
-        } catch (IllegalAccessException | NoSuchMethodException
-                | InvocationTargetException | InstantiationException e) {
+            result = wireType.encapsulatedType.encode(object);
+        } catch (RuntimeException e) {
             e.printStackTrace();
             throw new RuntimeException("Ran into an error while encoding " + object.getClass().getSimpleName());
         }
@@ -89,17 +84,50 @@ public class Encoder {
     }
 
     /**
+     * When a particular type has been registered with the encoder we usually want to
+     * interact with its WireType to encode/decode data, this method fetches the WireType.
+     * @param type The type
+     * @return The WireType
+     */
+    public WireType getWireTypeByType(Class<?> type) {
+        WireType wireType = null;
+        Integer registeredID = registeredTypeIDs.get(type);
+        if (registeredID != null) {
+            wireType = registeredWireTypes.get(registeredID);
+        }
+
+        return wireType;
+    }
+
+    /**
      * Register a class with the encoder.
      * If we have already registered this class, just return its ID.
+     *
      * @param classToRegister The class to register
      * @return The ID of the class
      */
     public int registerType(Class<?> classToRegister) {
-        if (!registeredTypes.containsKey(classToRegister)) {
-            registeredTypes.put(classToRegister, firstFreeID);
-            return firstFreeID++;
+        if (!registeredTypeIDs.containsKey(classToRegister)) {
+            int currentID = firstFreeID++;
+            WireType wireType = new WireType(this, classToRegister);
+            registeredTypeIDs.put(classToRegister, currentID);
+            registeredWireTypes.put(currentID, wireType);
+            wireType.encode();
+            return currentID;
         } else {
-            return registeredTypes.get(classToRegister);
+            return registeredTypeIDs.get(classToRegister);
+        }
+    }
+
+    /**
+     * Write a byte array to the encoder's output stream.
+     * @param output The byte array to write.
+     */
+    public void writeToOutputStream(byte[] output) {
+        try {
+            outputStream.write(output);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not write to encoder's output stream.");
         }
     }
 

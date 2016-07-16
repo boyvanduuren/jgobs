@@ -57,7 +57,7 @@ public class StructTypeTest {
         point.Y = 33;
 
         String gobsEncodedPointValue = "07ff82012c014200";
-        assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedPointValue), structType.encodeValue(point));
+        assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedPointValue), structType.encode(point));
     }
 
     @SuppressWarnings("unused")
@@ -90,7 +90,7 @@ public class StructTypeTest {
         person.married = false;
 
         String gobsEncodedPersonValue = "1bff82010e426f792076616e2044757572656e013a01046d616c6500";
-        assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedPersonValue), structType.encodeValue(person));
+        assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedPersonValue), structType.encode(person));
 
         // The next Person object tests the skipping of fields with a non-skipped field at the end
         person = new Person();
@@ -100,12 +100,12 @@ public class StructTypeTest {
         person.married = true;
 
         gobsEncodedPersonValue = "10ff820109426c616174204b6f65030100";
-        assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedPersonValue), structType.encodeValue(person));
+        assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedPersonValue), structType.encode(person));
 
         // Skip the last three fields
         person.married = false;
         gobsEncodedPersonValue = "0eff820109426c616174204b6f6500";
-        assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedPersonValue), structType.encodeValue(person));
+        assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedPersonValue), structType.encode(person));
     }
 
     @Test

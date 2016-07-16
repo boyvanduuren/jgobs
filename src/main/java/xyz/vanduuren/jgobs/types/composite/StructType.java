@@ -23,8 +23,8 @@ import static xyz.vanduuren.jgobs.lib.ByteArrayUtilities.oneByteArray;
 public class StructType extends GobCompositeType<Class<?>> {
 
     public final static int ID = 20;
-    List<Field> encodableFields = new ArrayList<>();
     private int classID = -1;
+    private List<Field> encodableFields = new ArrayList<>();
 
     public StructType(Encoder encoder, Class value) {
         super(encoder, value);
@@ -34,19 +34,28 @@ public class StructType extends GobCompositeType<Class<?>> {
         return Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
 
-    private byte[] encodeField(Field field) throws NoSuchFieldException, IllegalAccessException,
-            IllegalArgumentException {
-        byte[] encodedField = null;
+    /**
+     * Encode the field of a structType
+     * @param field The field to encode
+     * @return A byte array representing the encoded field
+     */
+    private byte[] encodeField(Field field) {
+        byte[] encodedField;
         // Capitalize the field name, because public fields in Go are capitalized
         final String fieldName = capitalize(field.getName());
         final int fieldID;
         if (Encoder.supportedTypes.containsKey(field.getType())) {
-            fieldID = Encoder.supportedTypes.get(field.getType()).getField("ID").getInt(null);
-        } else if (Encoder.registeredTypes.containsKey(field.getType())) {
-            fieldID = Encoder.registeredTypes.get(field.getType());
+            try {
+                fieldID = Encoder.supportedTypes.get(field.getType()).getField("ID").getInt(null);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Error while retrieving encoding information.");
+            }
+        } else if (encoder.registeredTypeIDs.containsKey(field.getType())) {
+            fieldID = encoder.registeredTypeIDs.get(field.getType());
         } else {
-            throw new IllegalArgumentException("Field " + field.getName() + " with type " + field.getType().getName()
-                    + " isn't registered with the encoder.");
+            // Encode the new type
+            fieldID = encoder.registerType(field.getType());
         }
         encodedField = new FieldType(encoder, new AbstractMap.SimpleEntry<>(fieldName, fieldID)).encode();
         encodableFields.add(field);
@@ -54,13 +63,7 @@ public class StructType extends GobCompositeType<Class<?>> {
         return encodedField;
     }
 
-    @Override
-    public Class decode() {
-        return null;
-    }
-
-    @Override
-    public byte[] encode() {
+    private void encodeType() {
         byte[] encodedStruct = oneByteArray;
         final String className = unencodedData.getSimpleName();
         classID = encoder.registerType(unencodedData);
@@ -78,17 +81,12 @@ public class StructType extends GobCompositeType<Class<?>> {
         for (Field field: classFields) {
             // Only encode public fields
             if (Modifier.isPublic(field.getModifiers())) {
-                try {
-                    fieldCount++;
-                    // Create or concat the encoded field to the encoded fields array
-                    if (encodedFields == null) {
-                        encodedFields = encodeField(field);
-                    } else {
-                        encodedFields = ByteArrayUtilities.concat(encodedFields, encodeField(field));
-                    }
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    e.printStackTrace();
-                    throw new RuntimeException("Couldn't access ID field of field");
+                fieldCount++;
+                // Create or concat the encoded field to the encoded fields array
+                if (encodedFields == null) {
+                    encodedFields = encodeField(field);
+                } else {
+                    encodedFields = ByteArrayUtilities.concat(encodedFields, encodeField(field));
                 }
             }
         }
@@ -101,51 +99,119 @@ public class StructType extends GobCompositeType<Class<?>> {
                     + "\" because it has no public fields.");
         }
 
-        encodedData = encodedStruct;
-
-        return ByteArrayUtilities.concat(encodedStruct, nullByteArray);
+        encodedData = ByteArrayUtilities.concat(encodedStruct, nullByteArray);
     }
 
-    public byte[] encodeValue(Object obj) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, InstantiationException {
+    @Override
+    public Class decode() {
+        return null;
+    }
+
+    @Override
+    public byte[] encode() {
+        if (classID == -1) {
+            encodeType();
+        }
+
+        return encodedData;
+    }
+
+    public byte[] encode(Object obj) {
+        return encode(obj, false);
+    }
+
+    public byte[] encode(Object obj, boolean nested) {
         if (!unencodedData.isAssignableFrom(obj.getClass())) {
             throw new IllegalArgumentException("Cannot encode parameter: " + obj.getClass().getName()
                     + " is not assignable from " + unencodedData.getName() + ".");
         }
 
-        if (classID == -1) {
-            this.encode();
-        }
+        // Encode the class of the object
+        this.encode();
 
-        byte[] encodedValue = new GobSignedInteger(classID).encode();
+        byte[] encodedValue = null;
+        if (!nested) {
+             encodedValue = new GobSignedInteger(classID).encode();
+        }
         int skippedAmountOfFields = 0;
 
         for (Field f: encodableFields) {
-            Object value = f.get(obj);
+            Object value = null;
+            try {
+                value = f.get(obj);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Error while retrieving field from object of type "
+                        + obj.getClass().getName() + ".");
+            }
+            // Get the gobType, which might be a default supported type, or a registered type
             Class<? extends GobType> gobType = Encoder.supportedTypes.get(value.getClass());
-            Constructor<? extends GobType> constructor = gobType.getConstructor(f.getType());
-            Method method = gobType.getMethod("encode");
-            byte[] tempValue = (byte[]) method.invoke(constructor.newInstance(value));
-            // We need to check if an encoded value results in a null array
-            // if it does, we skip it.
-            if (ByteArrayUtilities.isNonNull(tempValue)) {
-                byte[] fieldIncrement = new GobUnsignedInteger(skippedAmountOfFields + 1).encode();
-                encodedValue = ByteArrayUtilities.concat(encodedValue, fieldIncrement,
-                        (byte[]) method.invoke(constructor.newInstance(value)));
-                skippedAmountOfFields = 0;
-            } else {
-                // If we're not encoding the last field we need to increase the skipped fields counter
-                if (encodableFields.indexOf(f) < encodableFields.size()-1) {
-                    skippedAmountOfFields++;
+            if (gobType == null) {
+                gobType = encoder.getWireTypeByType(value.getClass()).encapsulatedType.getClass();
+            }
+
+            try {
+                // We'll need to get an instance of the GobType representing the type of the field
+                // and call encode() on it.
+                Constructor<? extends GobType> constructor;
+                Method method;
+                byte[] tempValue;
+                // GobCompositeTypes should already be registered, so we can just fetch them from the encoder
+                if (GobCompositeType.class.isAssignableFrom(gobType)) {
+                    method = gobType.getMethod("encode", Object.class, Boolean.TYPE);
+                    // constructor = gobType.getConstructor(Encoder.class, f.getType().getClass());
+                    GobCompositeType gobCompositeType = encoder.getWireTypeByType(f.getType()).encapsulatedType;
+                    tempValue = (byte[]) method.invoke(gobCompositeType, value, true);
                 }
+                // Else we'll need to construct one reflectively
+                else {
+                    method = gobType.getMethod("encode");
+                    constructor = gobType.getConstructor(f.getType());
+                    tempValue = (byte[]) method.invoke(constructor.newInstance(value));
+                }
+
+                // We need to check if an encoded value results in a null array
+                // if it does, we skip it.
+                if (ByteArrayUtilities.isNonNull(tempValue)) {
+                    byte[] fieldIncrement = new GobUnsignedInteger(skippedAmountOfFields + 1).encode();
+                    if (encodedValue == null) {
+                        encodedValue = ByteArrayUtilities.concat(fieldIncrement, tempValue);
+                    } else {
+                        encodedValue = ByteArrayUtilities.concat(encodedValue, fieldIncrement,
+                                tempValue);
+                    }
+                    skippedAmountOfFields = 0;
+                } else {
+                    // If we're not encoding the last field we need to increase the skipped fields counter
+                    if (encodableFields.indexOf(f) < encodableFields.size()-1) {
+                        skippedAmountOfFields++;
+                    }
+                }
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Couldn't retrieve encoding method.");
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Couldn't invoke encoding method.");
+            } catch (InstantiationException | InvocationTargetException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Couldn't instantiate simple GobType.");
             }
         }
 
         encodedValue = ByteArrayUtilities.concat(encodedValue, nullByteArray);
         byte[] totalSize = new GobUnsignedInteger(encodedValue.length).encode();
 
-        encodedValue = ByteArrayUtilities.concat(totalSize, encodedValue);
+        // If we're not nested. If we are nested, the total size will be encoded in the outer StructType
+        if (!nested) {
+            encodedValue = ByteArrayUtilities.concat(totalSize, encodedValue);
+        }
 
         return encodedValue;
+    }
+
+    public int getClassID() {
+        return classID;
     }
 
 }
