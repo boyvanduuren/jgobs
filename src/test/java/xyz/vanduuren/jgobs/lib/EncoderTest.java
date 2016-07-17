@@ -55,6 +55,9 @@ public class EncoderTest {
         assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedPerson), outputStream.toByteArray());
     }
 
+
+    // The resulting encoded struct was tested against a go program. Need to figure out how to test this better.
+
     public class Address {
         public String street;
         public int number;
@@ -75,7 +78,6 @@ public class EncoderTest {
         }
     }
 
-    // The resulting encoded struct was tested against a go program. Need to figure out how to test this better.
     @Test
     public void encodeNestedStruct() throws Exception {
         PersonWithAddress personWithAddress = new PersonWithAddress("Jan Klaassen", "Kerksteeg", 12, "Leiden");
@@ -86,6 +88,42 @@ public class EncoderTest {
                 + "E0101094B65726B7374656567011801064C656964656E0000";
 
         assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedPersonWithAddress), outputStream.toByteArray());
+    }
+
+
+    // The result of this program was tested by deserializing the result in go, and verifying that:
+    //
+    //  dec.Decode(&node)
+    //	curr := &node
+    //  for curr != nil {
+    //    i++
+    //    fmt.Printf("n%d\n", i)
+    //    curr = curr.Next
+    //  }
+    //
+    // resulted in the output
+    // n1
+    // n2
+    // n3
+
+    public class Node {
+        public Node next;
+    }
+
+    @Test
+    public void encodeLinkedList() throws Exception {
+        Node n1 = new Node();
+        Node n2 = new Node();
+        Node n3 = new Node();
+
+        n1.next = n2;
+        n2.next = n3;
+
+        encoder.encode(n1);
+
+        String gobsEncodedLinkedList = "1CFF81030101044E6F646501FF8200010101044E65787401FF8200000006FF8201010000";
+
+        assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedLinkedList), outputStream.toByteArray());
     }
 
 }

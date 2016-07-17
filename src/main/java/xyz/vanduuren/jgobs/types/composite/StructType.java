@@ -144,6 +144,13 @@ public class StructType extends GobCompositeType<Class<?>> {
                 throw new RuntimeException("Error while retrieving field from object of type "
                         + obj.getClass().getName() + ".");
             }
+
+            // Skip encoding this field if it's empty
+            if (value == null) {
+                skippedAmountOfFields++;
+                continue;
+            }
+
             // Get the gobType, which might be a default supported type, or a registered type
             Class<? extends GobType> gobType = Encoder.supportedTypes.get(value.getClass());
             if (gobType == null) {
@@ -199,19 +206,33 @@ public class StructType extends GobCompositeType<Class<?>> {
             }
         }
 
-        encodedValue = ByteArrayUtilities.concat(encodedValue, nullByteArray);
-        byte[] totalSize = new GobUnsignedInteger(encodedValue.length).encode();
+        // Encode the struct. We have three possibilities:
+        //
+        // 1) Either this is an empty object, in which case we return a null byte
+        // 2) We have a field which refers to an empty (not null!) object, in which case we need to
+        //    select that field, and then encode a null byte (happens in for instance a linked list, where
+        //    we have class Node { Node next; } and n1.next = n2, and n2.next = null, where both n1
+        //    and n2 are of type Node
+        // 3) The most common case, all our fields encoded to some byte array and we just stick a null byte on
+        //    it to signify the end of the struct
+        if (skippedAmountOfFields == encodableFields.size()) {
+            // case 1
+            encodedValue = nullByteArray;
+        } else {
+            encodedValue = encodedValue == null
+                    // case 2
+                    ? ByteArrayUtilities.concat(oneByteArray, nullByteArray)
+                    // case 3
+                    : ByteArrayUtilities.concat(encodedValue, nullByteArray);
+        }
 
         // If we're not nested. If we are nested, the total size will be encoded in the outer StructType
         if (!nested) {
+            byte[] totalSize = new GobUnsignedInteger(encodedValue.length).encode();
             encodedValue = ByteArrayUtilities.concat(totalSize, encodedValue);
         }
 
         return encodedValue;
-    }
-
-    public int getClassID() {
-        return classID;
     }
 
 }
