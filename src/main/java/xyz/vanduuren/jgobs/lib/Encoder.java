@@ -49,12 +49,21 @@ public class Encoder {
         supportedTypes = Collections.unmodifiableMap(tempMap);
     }
 
+    public final boolean autoRegister;
     public final LinkedHashMap<Class<?>, Integer> registeredTypeIDs = new LinkedHashMap<>();
     public final Map<Integer, WireType> registeredWireTypes = new HashMap<>();
     private int firstFreeID = 65;
     private OutputStream outputStream;
 
-    public Encoder(OutputStream outputStream) {
+    /**
+     * Construct a new encoder.
+     * @param autoRegister Setting this boolean to true results in nested public fields of an unknown type to be
+     *                     automatically registered with the encoder. Setting this to false means fields with an
+     *                     unknown type will be skipped when encoding them.
+     * @param outputStream The stream used to capture output.
+     */
+    public Encoder(boolean autoRegister, OutputStream outputStream) {
+        this.autoRegister = autoRegister;
         this.outputStream = outputStream;
     }
 
@@ -81,6 +90,10 @@ public class Encoder {
         }
 
         outputStream.write(result);
+    }
+
+    public int getTypeID(Class<?> clazz) {
+        return registeredTypeIDs.get(clazz);
     }
 
     /**
@@ -115,7 +128,7 @@ public class Encoder {
             wireType.encode();
             return currentID;
         } else {
-            return registeredTypeIDs.get(classToRegister);
+            return getTypeID(classToRegister);
         }
     }
 

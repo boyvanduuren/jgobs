@@ -24,7 +24,7 @@ public class StructTypeTest {
     @Before
     public void clearEncoder() {
         outputStream = new ByteArrayOutputStream();
-        encoder = new Encoder(outputStream);
+        encoder = new Encoder(true, outputStream);
     }
 
 
@@ -42,6 +42,7 @@ public class StructTypeTest {
 
     @Test
     public void encodePointType() throws Exception {
+        encoder.registerType(Point.class);
         StructType structType = new StructType(encoder, Point.class);
 
         String gobsEncodedStruct = "010105506f696e7401ff8200010201015801040001015901040000";
@@ -51,6 +52,7 @@ public class StructTypeTest {
 
     @Test
     public void encodePointValue() throws Exception {
+        encoder.registerType(Point.class);
         StructType structType = new StructType(encoder, Point.class);
         Point point = new Point();
         point.X = 22;
@@ -70,6 +72,7 @@ public class StructTypeTest {
 
     @Test
     public void encodePersonType() throws Exception {
+        encoder.registerType(Person.class);
         StructType structType = new StructType(encoder, Person.class);
 
         String gobsEncodedStruct = "010106506572736f6e01ff8200010401044e616d65010c000103416765010400"
@@ -79,6 +82,7 @@ public class StructTypeTest {
 
     @Test
     public void encodePersonValue() throws Exception {
+        encoder.registerType(Person.class);
         StructType structType = new StructType(encoder, Person.class);
 
         // person.married for the next object is 0x00 gobs encoded. This will result in a
@@ -123,6 +127,7 @@ public class StructTypeTest {
             public String baz;
         }
         String gobsEncodedStruct = "010103466f6f01ff820001020103426172010400010342617a010c0000";
+        encoder.registerType(Foo.class);
         assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedStruct),
                 new StructType(encoder, Foo.class).encode());
     }
@@ -149,6 +154,7 @@ public class StructTypeTest {
         }
         String gobsEncodedStruct = "0101044461746101ff820001040103526177010a000107436865636b65640102"
                 +"000106576569676874010800010653657269616c010c0000";
+        encoder.registerType(Data.class);
         assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedStruct),
                 new StructType(encoder, Data.class).encode());
     }
@@ -186,6 +192,9 @@ public class StructTypeTest {
             public int bar;
             public String baz;
         }
+
+        encoder.registerType(Data.class);
+        encoder.registerType(Foo.class);
 
         String gobsEncodedStruct = "0101044461746101ff820001040103526177010a000107436865636b65640102"
                 + "000106576569676874010800010653657269616c010c0000";

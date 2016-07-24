@@ -53,10 +53,14 @@ public class StructType extends GobCompositeType<Class<?>> {
             }
         } else if (encoder.registeredTypeIDs.containsKey(field.getType())) {
             fieldID = encoder.registeredTypeIDs.get(field.getType());
-        } else {
+        } else if (encoder.autoRegister) {
             // Encode the new type
             fieldID = encoder.registerType(field.getType());
+        } else {
+            // Don't encode this field at all
+            return null;
         }
+
         encodedField = new FieldType(encoder, new AbstractMap.SimpleEntry<>(fieldName, fieldID)).encode();
         encodableFields.add(field);
 
@@ -66,7 +70,7 @@ public class StructType extends GobCompositeType<Class<?>> {
     private void encodeType() {
         byte[] encodedStruct = oneByteArray;
         final String className = unencodedData.getSimpleName();
-        classID = encoder.registerType(unencodedData);
+        classID = encoder.getTypeID(unencodedData);
 
         // Construct StructType.commonType with the class name and ID
         CommonType commonType = new CommonType(encoder, new AbstractMap.SimpleEntry<>(className, classID));
@@ -86,7 +90,12 @@ public class StructType extends GobCompositeType<Class<?>> {
                 if (encodedFields == null) {
                     encodedFields = encodeField(field);
                 } else {
-                    encodedFields = ByteArrayUtilities.concat(encodedFields, encodeField(field));
+                    byte[] encodedField = encodeField(field);
+                    if (encodedField == null) {
+                        fieldCount--;
+                    } else {
+                        encodedFields = ByteArrayUtilities.concat(encodedFields, encodedField);
+                    }
                 }
             }
         }

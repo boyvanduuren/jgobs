@@ -24,7 +24,7 @@ public class WireTypeTest {
     @Before
     public void setUp() throws Exception {
         outputStream = new ByteArrayOutputStream();
-        encoder = new Encoder(outputStream);
+        encoder = new Encoder(true, outputStream);
     }
 
     @Test
@@ -40,6 +40,8 @@ public class WireTypeTest {
             public int X;
             public int Y;
         }
+
+        encoder.registerType(Point.class);
 
         String gobsEncodedWireType = "1fff8103010105506f696e7401ff820001020101580104000101590104000000";
         assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedWireType),

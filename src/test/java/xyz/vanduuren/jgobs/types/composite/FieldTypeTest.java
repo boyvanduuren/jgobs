@@ -26,7 +26,7 @@ public class FieldTypeTest {
     @Before
     public void clearEncoder() {
         outputStream = new ByteArrayOutputStream();
-        encoder = new Encoder(outputStream);
+        encoder = new Encoder(true, outputStream);
     }
 
     @Test

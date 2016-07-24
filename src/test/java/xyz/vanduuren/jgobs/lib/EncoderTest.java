@@ -22,7 +22,7 @@ public class EncoderTest {
     @Before
     public void setUp() throws Exception {
         outputStream = new ByteArrayOutputStream();
-        encoder = new Encoder(outputStream);
+        encoder = new Encoder(true, outputStream);
     }
 
     @Test(expected=IllegalArgumentException.class)
@@ -86,6 +86,19 @@ public class EncoderTest {
                 + "64E756D626572010400010443697479010C00000035FF8103010111506572736F6E576974684164647265737301"
                 + "FF8200010201044E616D65010C0001074164647265737301FF8400000028FF82010C4A616E204B6C61617373656"
                 + "E0101094B65726B7374656567011801064C656964656E0000";
+
+        assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedPersonWithAddress), outputStream.toByteArray());
+    }
+
+    // Encode a type without auto registering newly encountered types. This should result in a person without
+    // an address.
+    @Test
+    public void encodeNestedStructWithoutAutoRegister() throws Exception {
+        encoder = new Encoder(false, outputStream);
+        PersonWithAddress personWithAddress = new PersonWithAddress("Jan Klaassen", "Kerksteeg", 12, "Leiden");
+        encoder.encode(personWithAddress);
+        String gobsEncodedPersonWithAddress = "28ff8103010111506572736f6e576974684164647265737301ff8200010101044e616d65"
+                + "010c00000011ff82010c4a616e204b6c61617373656e00";
 
         assertArrayEquals(DatatypeConverter.parseHexBinary(gobsEncodedPersonWithAddress), outputStream.toByteArray());
     }
