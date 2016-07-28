@@ -65,6 +65,19 @@ public class Encoder {
     public Encoder(boolean autoRegister, OutputStream outputStream) {
         this.autoRegister = autoRegister;
         this.outputStream = outputStream;
+
+        // Add the ID's of the default supported types to opur registeredTypeIDs map
+        supportedTypes.entrySet().stream()
+                .map(entry -> entry.getValue())
+                .distinct()
+                .forEach(supportedType -> {
+                    try {
+                        registeredTypeIDs.put(supportedType, supportedType.getField("ID").getInt(null));
+                    } catch (NoSuchFieldException | IllegalAccessException e) {
+                        throw new RuntimeException("Error while getting ID field of " + supportedType.getSimpleName()
+                                + ".");
+                    }
+                });
     }
 
     /**
@@ -93,7 +106,13 @@ public class Encoder {
     }
 
     public int getTypeID(Class<?> clazz) {
-        return registeredTypeIDs.get(clazz);
+        if (supportedTypes.get(clazz) != null) {
+            clazz = supportedTypes.get(clazz);
+        }
+
+        return registeredTypeIDs.containsKey(clazz) ?
+                registeredTypeIDs.get(clazz) :
+                -1;
     }
 
     /**
@@ -120,7 +139,7 @@ public class Encoder {
      * @return The ID of the class
      */
     public int registerType(Class<?> classToRegister) {
-        if (!registeredTypeIDs.containsKey(classToRegister)) {
+        if (!registeredTypeIDs.containsKey(classToRegister) && !supportedTypes.containsKey(classToRegister)) {
             int currentID = firstFreeID++;
             WireType wireType = new WireType(this, classToRegister);
             registeredTypeIDs.put(classToRegister, currentID);
