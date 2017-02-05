@@ -13,7 +13,7 @@ public final class ByteArrayUtilities {
     public static final byte[] nullByteArray = new byte[]{0};
     public static final byte[] oneByteArray = new byte[]{1};
     // private constructor so this class cannot be instantiated
-    rivate ByteArrayUtilities() {}
+    private ByteArrayUtilities() {}
 
     /**
      * Concatenate multiple byte arrays
